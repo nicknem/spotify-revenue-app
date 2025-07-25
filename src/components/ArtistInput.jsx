@@ -99,10 +99,6 @@ function ArtistInput({ onSubmit, loading }) {
         {error && <div className="error-message">{error}</div>}
       </form>
 
-      <div className="example">
-        <p>Example:</p>
-        <code>https://open.spotify.com/artist/4YRxDV8wJFPHPTeXepOstw</code>
-      </div>
     </div>
   );
 }
