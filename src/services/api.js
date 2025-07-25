@@ -59,7 +59,7 @@ async function apiRequest(url, options = {}) {
     
     // Améliorer les messages d'erreur pour l'utilisateur
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      throw new Error('Impossible de contacter le serveur. Vérifiez que le backend est démarré sur le port 3001.');
+      throw new Error('Impossible de contacter le serveur. Vérifiez votre connexion internet.');
     }
     
     // Relancer l'erreur pour que le composant puisse la gérer
@@ -140,7 +140,7 @@ export const API_CONFIG = {
  * Messages d'erreur standardisés pour l'interface utilisateur
  */
 export const ERROR_MESSAGES = {
-  NETWORK_ERROR: 'Erreur de connexion. Vérifiez votre connexion internet et que le backend est démarré.',
+  NETWORK_ERROR: 'Erreur de connexion. Vérifiez votre connexion internet.',
   INVALID_URL: 'URL Spotify invalide. Vérifiez le format de l\'URL.',
   SCRAPING_FAILED: 'Impossible d\'analyser cette page Spotify. L\'artiste existe-t-il ?',
   SERVER_ERROR: 'Erreur serveur. Veuillez réessayer plus tard.',

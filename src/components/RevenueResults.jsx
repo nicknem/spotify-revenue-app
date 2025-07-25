@@ -38,24 +38,24 @@ function RevenueResults({ results, onReset }) {
     <div className="revenue-results">
       {/* En-tête minimaliste */}
       <div className="results-header">
-        <h2>Analysis complete</h2>
-        <p>Processed in {duration}</p>
+        <h2>Analyse terminée</h2>
+        <p>Traité en {duration}</p>
       </div>
 
       {/* Métriques principales - revenus en premier */}
       <div className="metrics-grid">
         <div className="metric-item revenue-highlight">
-          <span className="metric-label">Estimated monthly revenue</span>
+          <span className="metric-label">Revenus mensuels estimés</span>
           <span className="metric-value highlight">€{formatted.revenue}</span>
         </div>
         
         <div className="metric-item secondary">
-          <span className="metric-label">Monthly listeners</span>
+          <span className="metric-label">Auditeurs mensuels</span>
           <span className="metric-value">{monthlyListeners.toLocaleString()}</span>
         </div>
         
         <div className="metric-item secondary">
-          <span className="metric-label">Estimated monthly streams</span>
+          <span className="metric-label">Streams mensuels estimés</span>
           <span className="metric-value">{Math.round(estimates.streams).toLocaleString()}</span>
         </div>
         
@@ -64,14 +64,14 @@ function RevenueResults({ results, onReset }) {
 
       {/* Méthodologie simple */}
       <div className="methodology">
-        <h4>Methodology</h4>
-        <p>Data scraped from Spotify Web. Revenue based on $0.004/stream + EUR conversion.</p>
-        <p>Top track weighted at 80% to reduce hit bias. Estimations are approximate.</p>
+        <h4>Méthodologie</h4>
+        <p>Données extraites du web Spotify. Revenus basés sur 0,004$/stream + conversion EUR.</p>
+        <p>Le titre principal est pondéré à 80% pour réduire les biais. Les estimations sont approximatives.</p>
       </div>
 
       {/* Bouton reset */}
       <button onClick={onReset} className="reset-button">
-        Analyze another artist
+        Analyser un autre artiste
       </button>
     </div>
   );

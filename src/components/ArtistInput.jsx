@@ -60,11 +60,11 @@ function ArtistInput({ onSubmit, loading }) {
       </div>
       
       {/* Main application title */}
-      <h1>Revenue Estimator</h1>
+      <h1>Les streams ça paye ?</h1>
       
       {/* Subtitle explaining what the app does */}
       <p className="subtitle">
-        Discover how much your favorite artists earn on Spotify
+        Découvrez combien gagnent vos artistes préférés sur Spotify
       </p>
       
       {/* The main form for URL input */}
@@ -88,7 +88,7 @@ function ArtistInput({ onSubmit, loading }) {
             className="analyze-button"
             disabled={loading || !url.trim()}
           >
-            {loading ? 'Analyzing...' : 'Analyze'}
+            {loading ? 'Analyse en cours...' : 'Analyser'}
           </button>
         </div>
         
