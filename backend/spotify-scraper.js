@@ -511,10 +511,28 @@ async function scrapeArtistRevenue(artistUrl) {
     await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     
     console.log('📍 Navigation vers la page artiste...');
-    await page.goto(artistUrl, { waitUntil: 'domcontentloaded', timeout: 15000 }); // Plus rapide que networkidle0
+    await page.goto(artistUrl, { waitUntil: 'networkidle2', timeout: 20000 });
     
-    // Attente réduite - le DOM est déjà chargé
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Attendre plus longtemps que le contenu dynamique se charge
+    console.log('⏳ Attente du contenu dynamique...');
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Debug : vérifier ce qui est vraiment sur la page
+    const pageContent = await page.evaluate(() => {
+      const allText = document.body.innerText;
+      console.log(`📄 Contenu de la page (premiers 200 chars): "${allText.substring(0, 200)}"`);
+      
+      // Chercher des mots-clés
+      const hasListeners = allText.toLowerCase().includes('listeners') || allText.toLowerCase().includes('auditeurs');
+      const hasMonthly = allText.toLowerCase().includes('monthly') || allText.toLowerCase().includes('mensuel');
+      
+      console.log(`🔍 Contient "listeners/auditeurs": ${hasListeners}`);
+      console.log(`🔍 Contient "monthly/mensuel": ${hasMonthly}`);
+      
+      return { hasListeners, hasMonthly, textLength: allText.length };
+    });
+    
+    console.log(`📊 Analyse de la page: ${pageContent.textLength} caractères`);
     
     console.log('🔍 Recherche des auditeurs mensuels...');
     const monthlyListeners = await getMonthlyListeners(page);
