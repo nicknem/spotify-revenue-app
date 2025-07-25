@@ -276,30 +276,70 @@ async function getMonthlyListeners(page) {
     const visibleElements = document.querySelectorAll('span, div, p, h1, h2, h3');
     console.log(`👀 Nombre d'éléments visibles à analyser: ${visibleElements.length}`);
     
+    // Patterns multilingues à rechercher
+    const patterns = [
+      'auditeurs mensuels',
+      'monthly listeners', 
+      'mensuel',
+      'listeners',
+      'écoutes mensuelles'
+    ];
+    
     for (let element of visibleElements) {
       const text = element.textContent;
       
-      // On veut un texte court qui contient "auditeurs mensuels"
-      if (text && text.includes('auditeurs mensuels') && text.length < 100) {
-        console.log(`✅ Trouvé texte court: "${text}"`);
-        console.log(`📝 Longueur: ${text.length} caractères`);
-        
-        // Pattern spécifique pour "X auditeurs mensuels"
-        const pattern = text.match(/(\d[\d\s]*)\s*auditeurs mensuels/);
-        if (pattern && pattern[1]) {
-          const number = parseInt(pattern[1].replace(/\s/g, ''));
-          console.log(`🎯 Nombre extrait: ${number}`);
+      // Vérifier chaque pattern de langue
+      for (let pattern of patterns) {
+        if (text && text.toLowerCase().includes(pattern) && text.length < 100) {
+          console.log(`✅ Trouvé texte avec "${pattern}": "${text}"`);
+          console.log(`📝 Longueur: ${text.length} caractères`);
           
-          // Vérification de sanité: entre 1 et 100 millions
-          if (number > 0 && number < 100000000) {
-            return number;
+          // Pattern pour extraire les nombres (multi-format)
+          const numberMatch = text.match(/(\d[\d\s,\.]*\d|\d+)\s*(auditeurs mensuels|monthly listeners|mensuel|listeners)/i);
+          if (numberMatch && numberMatch[1]) {
+            const number = parseInt(numberMatch[1].replace(/[\s,\.]/g, ''));
+            console.log(`🎯 Nombre extrait: ${number}`);
+            
+            // Vérification de sanité: entre 1 et 100 millions
+            if (number > 0 && number < 100000000) {
+              return number;
+            }
           }
         }
       }
     }
     
-    // Stratégie 2: Si la première ne marche pas, chercher avec une approche différente
-    console.log('🔄 Stratégie 2: recherche par pattern dans tous les petits textes');
+    // Stratégie 2: Chercher n'importe quel gros nombre qui pourrait être les auditeurs
+    console.log('🔄 Stratégie 2: recherche de gros nombres dans le contenu');
+    
+    const allNumbers = [];
+    for (let element of visibleElements) {
+      const text = element.textContent;
+      
+      if (text && text.length < 100) {
+        // Chercher des nombres de format "X,XXX,XXX" ou "X XXX XXX"
+        const bigNumbers = text.match(/\d[\d\s,\.]{4,}/g);
+        if (bigNumbers) {
+          bigNumbers.forEach(numStr => {
+            const cleanNum = parseInt(numStr.replace(/[\s,\.]/g, ''));
+            if (cleanNum > 100000 && cleanNum < 100000000) { // Entre 100K et 100M
+              allNumbers.push({number: cleanNum, context: text});
+              console.log(`🔢 Nombre candidat: ${cleanNum.toLocaleString()} dans "${text}"`);
+            }
+          });
+        }
+      }
+    }
+    
+    // Si on a trouvé des nombres, prendre le plus gros (probablement les auditeurs mensuels)
+    if (allNumbers.length > 0) {
+      const biggest = allNumbers.sort((a, b) => b.number - a.number)[0];
+      console.log(`🎯 Plus gros nombre trouvé: ${biggest.number.toLocaleString()}`);
+      return biggest.number;
+    }
+    
+    // Stratégie 3: Recherche spécifique pour "auditeurs" en français
+    console.log('🔄 Stratégie 3: recherche spécifique texte français');
     
     for (let element of visibleElements) {
       const text = element.textContent;
