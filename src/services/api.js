@@ -92,18 +92,42 @@ export async function analyzeArtistRevenue(artistUrl) {
 }
 
 /**
- * Fonction pour rechercher un artiste par nom (placeholder pour future implémentation)
- * 
- * Cette fonction sera implémentée plus tard quand on ajoutera l'intégration
- * avec l'API Spotify officielle pour la recherche d'artistes.
+ * Rechercher des artistes par nom via l'API Spotify
  * 
  * @param {string} query - Nom de l'artiste à rechercher
- * @returns {Promise<object>} - Résultats de recherche
+ * @param {number} limit - Nombre de résultats (défaut: 10)
+ * @returns {Promise<Array>} - Liste d'artistes avec photos et infos
  */
-export async function searchArtist(query) {
+export async function searchArtist(query, limit = 10) {
   console.log(`🔍 Recherche d'artiste: ${query}`);
   
-  return await apiRequest(`${API_BASE_URL}/api/search-artist?q=${encodeURIComponent(query)}`);
+  const response = await apiRequest(`${API_BASE_URL}/api/search-artist?q=${encodeURIComponent(query)}&limit=${limit}`);
+  return response.artists || [];
+}
+
+/**
+ * Obtenir les informations détaillées d'un artiste
+ * 
+ * @param {string} artistId - ID Spotify de l'artiste
+ * @returns {Promise<object>} - Informations détaillées avec photo
+ */
+export async function getArtistInfo(artistId) {
+  console.log(`📊 Récupération infos artiste: ${artistId}`);
+  
+  const response = await apiRequest(`${API_BASE_URL}/api/artist/${artistId}`);
+  return response.artist;
+}
+
+/**
+ * Obtenir les artistes populaires du moment
+ * 
+ * @returns {Promise<Array>} - Liste des artistes tendance avec photos
+ */
+export async function getTrendingArtists() {
+  console.log(`🔥 Récupération artistes tendance...`);
+  
+  const response = await apiRequest(`${API_BASE_URL}/api/trending-artists`);
+  return response.artists || [];
 }
 
 /**

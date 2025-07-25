@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import ArtistInput from './components/ArtistInput'
+import ArtistAutocomplete from './components/ArtistAutocomplete'
 import RevenueResults from './components/RevenueResults'
 import { analyzeArtistRevenue, ERROR_MESSAGES } from './services/api'
 
@@ -35,12 +35,15 @@ function App() {
   const [progressMessage, setProgressMessage] = useState('');
 
   /**
-   * Fonction appelée quand l'utilisateur soumet une URL d'artiste
+   * Fonction appelée quand l'utilisateur sélectionne un artiste
    * 
-   * @param {string} artistUrl - URL de l'artiste Spotify à analyser
+   * @param {Object} artist - Artiste sélectionné avec URL ou nom
    */
-  const handleAnalyzeArtist = async (artistUrl) => {
-    console.log(`🚀 Début de l'analyse pour: ${artistUrl}`);
+  const handleAnalyzeArtist = async (artist) => {
+    // Utiliser l'URL de l'artiste (soit depuis l'autocomplete, soit directement saisie)
+    const artistUrl = artist.url || `https://open.spotify.com/artist/${artist.id}`;
+    
+    console.log(`🚀 Début de l'analyse pour: ${artist.name || 'Artiste'} (${artistUrl})`);
     
     // Réinitialiser les états précédents
     setErrorMessage('');
@@ -111,12 +114,30 @@ function App() {
       {/* Conteneur principal avec classe CSS pour le styling */}
       <div className="app-container">
         
-        {/* Vue : Saisie d'URL (état initial) */}
+        {/* Vue : Saisie avec autocomplete (état initial) */}
         {currentView === 'input' && (
-          <ArtistInput 
-            onSubmit={handleAnalyzeArtist}
-            loading={isLoading}
-          />
+          <>
+            {/* Spotify-inspired logo */}
+            <div className="spotify-logo">
+              <svg width="124" height="124" viewBox="0 0 124 124" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="62" cy="62" r="62" fill="#1DB954"/>
+                <path d="M88.5 49.7C77.1 44.3 62.4 43.1 47.7 46.2C45.9 46.6 44.6 48.3 45 50.1C45.4 51.9 47.1 53.2 48.9 52.8C61.5 50.2 74.2 51.2 83.7 55.7C85.4 56.6 87.4 55.9 88.3 54.2C89.2 52.5 88.5 50.5 86.8 49.6L88.5 49.7ZM87.2 62.4C86.5 60.9 84.7 60.3 83.2 61C74.8 65.4 59.4 66.9 47.1 63.1C45.5 62.6 43.8 63.4 43.3 65C42.8 66.6 43.6 68.3 45.2 68.8C59.2 73.2 75.9 71.5 85.6 66.4C87.1 65.7 87.7 63.9 87 62.4H87.2ZM82.6 74.6C82.1 73.4 80.6 73 79.4 73.5C72.1 77.3 58.9 78.4 47.7 75.4C46.4 75 45 75.7 44.6 77C44.2 78.3 44.9 79.7 46.2 80.1C58.5 83.4 72.8 82.2 81.2 77.8C82.4 77.3 82.8 75.8 82.3 74.6H82.6Z" fill="black"/>
+              </svg>
+            </div>
+            
+            {/* Main application title */}
+            <h1>Les streams ça paye ?</h1>
+            
+            {/* Subtitle explaining what the app does */}
+            <p className="subtitle">
+              Découvrez combien gagnent vos artistes préférés sur Spotify
+            </p>
+            
+            <ArtistAutocomplete 
+              onSelectArtist={handleAnalyzeArtist}
+              loading={isLoading}
+            />
+          </>
         )}
         
         {/* Vue : Chargement pendant l'analyse */}
