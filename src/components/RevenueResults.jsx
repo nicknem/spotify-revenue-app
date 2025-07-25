@@ -44,41 +44,23 @@ function RevenueResults({ results, onReset }) {
 
       {/* Métriques principales - revenus en premier */}
       <div className="metrics-grid">
-        <div className="metric-item">
+        <div className="metric-item revenue-highlight">
           <span className="metric-label">Estimated monthly revenue</span>
           <span className="metric-value highlight">€{formatted.revenue}</span>
         </div>
         
-        <div className="metric-item">
+        <div className="metric-item secondary">
           <span className="metric-label">Monthly listeners</span>
           <span className="metric-value">{monthlyListeners.toLocaleString()}</span>
         </div>
         
-        <div className="metric-item">
+        <div className="metric-item secondary">
           <span className="metric-label">Estimated monthly streams</span>
           <span className="metric-value">{Math.round(estimates.streams).toLocaleString()}</span>
         </div>
         
-        <div className="metric-item">
-          <span className="metric-label">Streams per listener ratio</span>
-          <span className="metric-value">{estimates.ratio.toFixed(2)}</span>
-        </div>
       </div>
 
-      {/* Tracks analysés (si disponibles) */}
-      {top5Data && top5Data.tracks && top5Data.tracks.length > 0 && (
-        <div className="top-tracks">
-          <h4>Top {top5Data.tracks.length} tracks analyzed</h4>
-          <ul className="track-list">
-            {top5Data.tracks.map((streams, index) => (
-              <li key={index} className="track-item">
-                <span className="track-name">#{index + 1}</span>
-                <span className="track-streams">{streams.toLocaleString()} streams</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       {/* Méthodologie simple */}
       <div className="methodology">

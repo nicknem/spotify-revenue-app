@@ -6,12 +6,14 @@
 }
 
 body {
-  font-family: 'Circular', 'Helvetica Neue', Arial, sans-serif;
-  background: #121212;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background: linear-gradient(135deg, #191414 0%, #0d1117 50%, #191414 100%);
+  background-attachment: fixed;
   color: #ffffff;
   line-height: 1.6;
   font-size: 14px;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 /* Force tout en colonne unique - pas de float */
@@ -55,10 +57,14 @@ body, html {
 /* ===== TYPOGRAPHY ===== */
 h1 {
   font-size: 48px;
-  font-weight: 700;
+  font-weight: 900;
   letter-spacing: -0.04em;
   margin-bottom: 16px;
   color: #ffffff;
+  background: linear-gradient(45deg, #1db954, #1ed760);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 h2 {
@@ -115,21 +121,24 @@ p {
 }
 
 .url-input {
-  background: #242424;
+  background: rgba(42, 42, 42, 0.8);
+  backdrop-filter: blur(8px);
   border: 2px solid #535353;
   color: #ffffff;
   padding: 16px 20px;
   font-size: 16px;
   font-family: inherit;
-  border-radius: 8px;
+  border-radius: 12px;
   outline: none;
   width: 500px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .url-input:focus {
   border-color: #1db954;
-  box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
+  box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.2), 0 8px 24px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
 }
 
 .url-input::placeholder {
@@ -137,23 +146,25 @@ p {
 }
 
 .analyze-button {
-  background: #1db954;
+  background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
   border: none;
   color: #000000;
   padding: 16px 32px;
   font-size: 16px;
   font-family: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   border-radius: 32px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   letter-spacing: 0;
   text-transform: none;
+  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.3);
 }
 
 .analyze-button:hover:not(:disabled) {
-  background: #1ed760;
-  transform: scale(1.04);
+  background: linear-gradient(135deg, #1ed760 0%, #24f169 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(29, 185, 84, 0.4);
 }
 
 .analyze-button:disabled {
@@ -263,19 +274,19 @@ p {
 .artist-info h3 {
   font-size: 14px;
   font-weight: 400;
-  color: #1a1a1a;
+  color: #ffffff;
   margin-bottom: 5px;
 }
 
 .listeners-count {
-  color: #666666;
+  color: #b3b3b3;
   font-size: 12px;
 }
 
 .metrics-grid {
   margin: 40px 0;
   text-align: left;
-  max-width: 700px;
+  max-width: 450px;
   margin-left: auto;
   margin-right: auto;
   width: 100%;
@@ -286,10 +297,33 @@ p {
   display: flex !important;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid #dddddd;
+  padding: 16px 24px;
+  border-bottom: 1px solid #535353;
   font-size: 16px;
   width: 100% !important;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+  gap: 20px;
+}
+
+.metric-item.revenue-highlight {
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.1) 0%, rgba(30, 215, 96, 0.05) 100%);
+  border: 1px solid rgba(29, 185, 84, 0.3);
+  border-bottom: 1px solid rgba(29, 185, 84, 0.3);
+  padding: 20px 28px;
+  margin-bottom: 20px;
+  font-size: 18px;
+  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.1);
+  gap: 24px;
+}
+
+.metric-item.secondary {
+  padding-left: 44px;
+  padding-right: 28px;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 15px;
+  gap: 16px;
 }
 
 .metric-item:last-child {
@@ -297,16 +331,16 @@ p {
 }
 
 .metric-label {
-  color: #666666;
+  color: #b3b3b3;
 }
 
 .metric-value {
-  color: #1a1a1a;
+  color: #ffffff;
   font-weight: 400;
 }
 
 .metric-value.highlight {
-  color: #16a34a;
+  color: #1db954;
 }
 
 .top-tracks {
@@ -322,7 +356,7 @@ p {
 
 .top-tracks h4 {
   font-size: 16px;
-  color: #1a1a1a;
+  color: #ffffff;
   margin-bottom: 20px;
   font-weight: 400;
 }
@@ -337,8 +371,8 @@ p {
   align-items: center;
   padding: 10px 0;
   font-size: 14px;
-  color: #999999;
-  border-bottom: 1px solid #e5e5e5;
+  color: #b3b3b3;
+  border-bottom: 1px solid #535353;
   width: 100% !important;
 }
 
@@ -348,18 +382,18 @@ p {
 
 .track-name {
   flex: 1;
-  color: #666666;
+  color: #b3b3b3;
 }
 
 .track-streams {
-  color: #1a1a1a;
+  color: #ffffff;
   font-size: 13px;
 }
 
 .methodology {
   margin: 40px 0;
   padding: 20px 0;
-  border-top: 1px solid #dddddd;
+  border-top: 1px solid #535353;
   width: 100%;
   max-width: 700px;
   margin-left: auto;
@@ -370,39 +404,42 @@ p {
 
 .methodology h4 {
   font-size: 14px;
-  color: #1a1a1a;
+  color: #ffffff;
   margin-bottom: 15px;
   font-weight: 400;
 }
 
 .methodology p {
   font-size: 12px;
-  color: #999999;
+  color: #b3b3b3;
   line-height: 1.5;
   margin-bottom: 8px;
 }
 
 .reset-button {
-  background: transparent;
-  border: 1px solid #999999;
-  color: #999999;
-  padding: 12px 16px;
-  font-size: 12px;
+  background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
+  border: none;
+  color: #000000;
+  padding: 16px 32px;
+  font-size: 16px;
   font-family: inherit;
+  font-weight: 700;
   cursor: pointer;
-  border-radius: 0;
-  transition: all 0.2s ease;
+  border-radius: 32px;
+  transition: all 0.3s ease;
   margin-top: 30px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0;
   display: block;
   width: auto;
   margin-left: auto;
   margin-right: auto;
+  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.3);
 }
 
 .reset-button:hover {
-  border-color: #1a1a1a;
-  color: #1a1a1a;
+  background: linear-gradient(135deg, #1ed760 0%, #24f169 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(29, 185, 84, 0.4);
 }
 
 /* ===== ERROR SECTION ===== */
@@ -419,7 +456,7 @@ p {
 }
 
 .error-message-display {
-  color: #666666;
+  color: #b3b3b3;
   font-size: 12px;
   margin-bottom: 30px;
   line-height: 1.5;
@@ -435,7 +472,7 @@ p {
 .app-footer {
   margin-top: 60px;
   padding: 30px 0;
-  border-top: 1px solid #dddddd;
+  border-top: 1px solid #535353;
   text-align: center;
   width: 100%;
   max-width: 1000px;

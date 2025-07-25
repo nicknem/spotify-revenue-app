@@ -9,7 +9,14 @@ function debugLog(message) {
   const timestamp = new Date().toISOString();
   const logMessage = `${timestamp} - ${message}\n`;
   console.log(`🔍 SCRAPER DEBUG: ${message}`); // Logger clairement dans la console du serveur
-  fs.appendFileSync('/Users/antoninarcher/code/spotify-revenue-webapp/debug-scraper.log', logMessage);
+  // En production, on évite d'écrire des fichiers, on utilise juste la console
+  if (process.env.NODE_ENV !== 'production') {
+    try {
+      fs.appendFileSync('./debug-scraper.log', logMessage);
+    } catch (err) {
+      // Ignore les erreurs de fichier en production
+    }
+  }
 }
 
 // Fonction pour analyser le top 5 des titres populaires (version améliorée)

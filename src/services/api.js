@@ -11,7 +11,7 @@
  */
 
 // Configuration de l'URL de base de notre API backend
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 /**
  * Fonction utilitaire pour faire des requêtes HTTP avec gestion d'erreur

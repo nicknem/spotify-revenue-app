@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
@@ -10,10 +10,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Spotify Revenue Estimator Backend",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "puppeteer": "^24.15.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
