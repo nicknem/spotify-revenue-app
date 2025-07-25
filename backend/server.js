@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { scrapeArtistRevenue } = require('./spotify-scraper');
+const { searchArtists, getArtistInfo, getTrendingArtists, extractArtistIdFromUrl } = require('./spotify-api');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -79,10 +80,10 @@ app.post('/api/artist-revenue', async (req, res) => {
   }
 });
 
-// Route pour rechercher un artiste (future expansion avec API Spotify)
+// Route pour rechercher des artistes via l'API Spotify
 app.get('/api/search-artist', async (req, res) => {
   try {
-    const { q } = req.query;
+    const { q, limit } = req.query;
     
     if (!q) {
       return res.status(400).json({ 
@@ -90,15 +91,56 @@ app.get('/api/search-artist', async (req, res) => {
       });
     }
     
-    // Pour l'instant, retourne un message d'info
-    // Plus tard on pourra connecter l'API Spotify pour la recherche
+    const artists = await searchArtists(q, parseInt(limit) || 10);
+    
     res.json({
-      message: 'Recherche d\'artiste - Fonctionnalité à venir',
+      success: true,
       query: q,
-      suggestion: 'Utilisez directement l\'URL Spotify de l\'artiste pour l\'instant'
+      artists: artists
     });
     
   } catch (error) {
+    console.error('❌ Erreur recherche artiste:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Route pour obtenir les informations détaillées d'un artiste
+app.get('/api/artist/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const artistInfo = await getArtistInfo(id);
+    
+    res.json({
+      success: true,
+      artist: artistInfo
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur récupération artiste:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Route pour obtenir les artistes tendance
+app.get('/api/trending-artists', async (req, res) => {
+  try {
+    const trendingArtists = await getTrendingArtists();
+    
+    res.json({
+      success: true,
+      artists: trendingArtists
+    });
+    
+  } catch (error) {
+    console.error('❌ Erreur récupération tendances:', error);
     res.status(500).json({
       success: false,
       error: error.message
@@ -122,7 +164,9 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     endpoints: {
       'POST /api/artist-revenue': 'Calculer les revenus d\'un artiste',
-      'GET /api/search-artist': 'Rechercher un artiste (à venir)',
+      'GET /api/search-artist?q=nom': 'Rechercher des artistes par nom',
+      'GET /api/artist/:id': 'Informations détaillées d\'un artiste',
+      'GET /api/trending-artists': 'Artistes populaires du moment',
       'GET /health': 'Status de l\'API'
     },
     algorithm: 'Algorithme intelligent avec analyse du top 5 + pondération'
