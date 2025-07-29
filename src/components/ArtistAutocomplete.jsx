@@ -122,6 +122,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
   const renderArtistItem = (artist, index, isSelected) => (
     <div
       key={artist.id}
+      className="artist-suggestion"
       onClick={() => handleArtistSelect(artist)}
       style={{
         display: 'flex', 
@@ -130,7 +131,10 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         padding: '8px 12px',
         border: '3px solid red',
         width: '100%',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        float: 'none',
+        position: 'static',
+        clear: 'none'
       }}
     >
       <div style={{
@@ -140,7 +144,8 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         flexShrink: 0,
         border: '2px solid lime',
         background: 'yellow',
-        display: 'inline-block'
+        float: 'none',
+        position: 'static'
       }}>
         {artist.image ? (
           <img src={artist.image} alt={artist.name} style={{
@@ -167,7 +172,8 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         flex: 1,
         border: '2px solid green',
         background: 'pink',
-        display: 'inline-block'
+        float: 'none',
+        position: 'static'
       }}>
         <div style={{margin: 0, color: 'black'}}>{artist.name} DEBUG</div>
         <div style={{margin: 0, color: 'black'}}>
