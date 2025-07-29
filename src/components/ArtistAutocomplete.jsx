@@ -122,9 +122,16 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
   const renderArtistItem = (artist, index, isSelected) => (
     <div
       key={artist.id}
-      className={`autocomplete-item ${isSelected ? 'selected' : ''}`}
       onClick={() => handleArtistSelect(artist)}
-      style={{display: 'flex', alignItems: 'center', padding: '8px 12px'}}
+      style={{
+        display: 'flex', 
+        flexDirection: 'row',
+        alignItems: 'center', 
+        padding: '8px 12px',
+        border: '3px solid red',
+        width: '100%',
+        boxSizing: 'border-box'
+      }}
     >
       <div className="artist-avatar" style={{
         width: '40px', 
