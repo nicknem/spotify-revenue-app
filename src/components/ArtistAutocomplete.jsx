@@ -137,7 +137,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         clear: 'none'
       }}
     >
-      <div style={{
+      <div className="artist-avatar-box" style={{
         width: '40px', 
         height: '40px', 
         marginRight: '12px',
@@ -168,7 +168,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
           }}>🎵</div>
         )}
       </div>
-      <div style={{
+      <div className="artist-info-box" style={{
         flex: 1,
         border: '2px solid green',
         background: 'pink',
