@@ -1,6 +1,6 @@
-# React + Vite
+# Spotify Revenue Estimator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application web pour estimer les revenus des artistes Spotify avec recherche intelligente et autocomplete.
 
 Currently, two official plugins are available:
 
