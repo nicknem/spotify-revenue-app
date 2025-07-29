@@ -161,18 +161,18 @@ function ArtistInput({ onSubmit, loading }) {
                   className="suggestion-item"
                   onClick={() => handleArtistSelect(artist)}
                 >
-                  <div className="artist-avatar">
+                  <div className="suggestion-image-container">
                     {artist.image ? (
-                      <img src={artist.image} alt={artist.name} />
+                      <img src={artist.image} alt={artist.name} className="suggestion-image" />
                     ) : (
-                      <div className="avatar-placeholder">🎵</div>
+                      <div className="suggestion-image-placeholder">🎵</div>
                     )}
                   </div>
-                  <div className="artist-info">
-                    <span className="artist-name">{artist.name}</span>
-                    <span className="artist-followers">
+                  <div className="suggestion-text">
+                    <div className="suggestion-name">{artist.name}</div>
+                    <div className="suggestion-followers">
                       {artist.followers?.toLocaleString()} followers
-                    </span>
+                    </div>
                   </div>
                 </div>
               ))}

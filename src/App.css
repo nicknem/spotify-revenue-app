@@ -802,62 +802,54 @@ p {
   background: rgba(29, 185, 84, 0.1);
 }
 
-/* Artist avatar in suggestions */
-.artist-avatar {
+/* Suggestion image container - separate div for image */
+.suggestion-image-container {
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.suggestion-image {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  overflow: hidden;
-  margin-right: 10px;
-  flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  position: relative;
-}
-
-.artist-avatar img {
-  width: 32px;
-  height: 32px;
   object-fit: cover;
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.avatar-placeholder {
+.suggestion-image-placeholder {
   width: 32px;
   height: 32px;
+  border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  position: absolute;
-  top: 0;
-  left: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Artist info in suggestions */
-.artist-info {
+/* Suggestion text container */
+.suggestion-text {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 1px;
-  line-height: 1.3;
+  gap: 2px;
 }
 
-.artist-name {
+.suggestion-name {
   color: #ffffff;
   font-weight: 600;
   font-size: 13px;
-  margin: 0;
+  line-height: 1.2;
 }
 
-.artist-followers {
+.suggestion-followers {
   color: #b3b3b3;
   font-size: 11px;
-  margin: 0;
+  line-height: 1.2;
 }
 
 /* Search loading indicator */
@@ -921,26 +913,26 @@ p {
     font-size: 15px;
   }
   
-  .artist-avatar {
+  .suggestion-image-container {
     width: 28px;
     height: 28px;
   }
   
-  .artist-avatar img,
-  .avatar-placeholder {
+  .suggestion-image,
+  .suggestion-image-placeholder {
     width: 28px;
     height: 28px;
   }
   
-  .avatar-placeholder {
+  .suggestion-image-placeholder {
     font-size: 12px;
   }
   
-  .artist-name {
+  .suggestion-name {
     font-size: 12px;
   }
   
-  .artist-followers {
+  .suggestion-followers {
     font-size: 10px;
   }
   
