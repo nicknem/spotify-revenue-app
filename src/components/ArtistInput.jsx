@@ -191,7 +191,21 @@ function ArtistInput({ onSubmit, loading }) {
                     Cette div devrait faire 32px × 32px selon notre CSS
                     C'est ici que le problème se situe probablement
                   */}
-                  <div className="suggestion-image-container">
+                  <div 
+                    className="suggestion-image-container"
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      minWidth: '32px',
+                      maxWidth: '32px',
+                      marginRight: '12px',
+                      flexShrink: 0,
+                      overflow: 'hidden',
+                      borderRadius: '50%',
+                      background: 'red',
+                      border: '3px solid lime'
+                    }}
+                  >
                     
                     {/* TEST : est-ce que l'artiste a une image ? */}
                     {artist.image ? (
@@ -202,7 +216,18 @@ function ArtistInput({ onSubmit, loading }) {
                         - className="suggestion-image" : style CSS pour l'image
                         - Cette img devrait faire 32px × 32px et être ronde
                       */}
-                      <img src={artist.image} alt={artist.name} className="suggestion-image" />
+                      <img 
+                        src={artist.image} 
+                        alt={artist.name} 
+                        className="suggestion-image"
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          display: 'block'
+                        }}
+                      />
                       
                     ) : (
                       
@@ -211,7 +236,19 @@ function ArtistInput({ onSubmit, loading }) {
                         - Affiche une icône musicale 🎵
                         - className="suggestion-image-placeholder" : même taille que l'image
                       */}
-                      <div className="suggestion-image-placeholder">🎵</div>
+                      <div 
+                        className="suggestion-image-placeholder"
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '50%',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '14px'
+                        }}
+                      >🎵</div>
                       
                     )}
                   </div>
