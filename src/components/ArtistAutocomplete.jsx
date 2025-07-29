@@ -125,15 +125,15 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
       className={`autocomplete-item ${isSelected ? 'selected' : ''}`}
       onClick={() => handleArtistSelect(artist)}
     >
-      <div className="artist-avatar">
+      <div className="artist-avatar" style={{width: '32px', height: '32px', background: 'red', border: '2px solid lime'}}>
         {artist.image ? (
-          <img src={artist.image} alt={artist.name} />
+          <img src={artist.image} alt={artist.name} style={{width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover'}} />
         ) : (
-          <div className="avatar-placeholder">🎵</div>
+          <div className="avatar-placeholder" style={{width: '32px', height: '32px', borderRadius: '50%', background: 'blue', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>🎵</div>
         )}
       </div>
       <div className="artist-info">
-        <div className="artist-name">{artist.name}</div>
+        <div className="artist-name">{artist.name} DEBUG</div>
         <div className="artist-details">
           {artist.followers?.toLocaleString()} auditeurs
           {artist.genres?.length > 0 && ` • ${artist.genres[0]}`}
