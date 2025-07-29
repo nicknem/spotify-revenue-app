@@ -32,14 +32,26 @@ function RevenueResults({ results, onReset }) {
     estimates,           // Objet contenant streams, revenue, et ratio calculés
     top5Data,           // Données sur le top 5 des titres (peut être null)
     formatted,          // Nombres pré-formatés pour l'affichage (ex: "1.2M", "500K")
+    artistName,         // Nom de l'artiste (si disponible)
+    artistImage,        // Image de l'artiste (si disponible)
+    url                 // URL Spotify de l'artiste
   } = data;
 
   return (
     <div className="revenue-results">
-      {/* En-tête minimaliste */}
+      {/* En-tête avec artiste */}
       <div className="results-header">
-        <h2>Analyse terminée</h2>
-        <p>Traité en {duration}</p>
+        <div className="artist-header">
+          {artistImage && (
+            <div className="artist-image">
+              <img src={artistImage} alt={artistName || 'Artiste'} />
+            </div>
+          )}
+          <div className="artist-details">
+            <h2>{artistName || 'Artiste analysé'}</h2>
+            <p>Analyse terminée en {duration}</p>
+          </div>
+        </div>
       </div>
 
       {/* Métriques principales - revenus en premier */}

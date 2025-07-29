@@ -730,3 +730,227 @@ p {
     font-size: 14px;
   }
 }
+
+/* ===== AUTOCOMPLETE STYLES ===== */
+
+/* Mode selector tabs */
+.input-mode-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 4px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.input-mode-tabs .tab {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #b3b3b3;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.input-mode-tabs .tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.input-mode-tabs .tab.active {
+  background: #1db954;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Search input group */
+.search-input-group {
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 16px;
+  border: 2px solid #404040;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.search-input:focus {
+  border-color: #1db954;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
+}
+
+/* Suggestions dropdown */
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(40, 40, 40, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid #404040;
+  border-radius: 12px;
+  margin-top: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background: rgba(29, 185, 84, 0.1);
+}
+
+/* Artist avatar in suggestions */
+.artist-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.artist-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Artist info in suggestions */
+.artist-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.artist-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.artist-followers {
+  color: #b3b3b3;
+  font-size: 12px;
+}
+
+/* Search loading indicator */
+.search-loading {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  color: #b3b3b3;
+  font-size: 12px;
+}
+
+/* ===== RESULTS PAGE ARTIST HEADER ===== */
+
+.artist-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.artist-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.artist-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.artist-details h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.artist-details p {
+  margin: 4px 0 0 0;
+  color: #b3b3b3;
+  font-size: 14px;
+}
+
+/* Mobile responsiveness for autocomplete */
+@media (max-width: 768px) {
+  .input-mode-tabs {
+    max-width: 100%;
+  }
+  
+  .input-mode-tabs .tab {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .artist-avatar {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .artist-name {
+    font-size: 13px;
+  }
+  
+  .artist-followers {
+    font-size: 11px;
+  }
+  
+  .artist-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .artist-details h2 {
+    font-size: 20px;
+  }
+}

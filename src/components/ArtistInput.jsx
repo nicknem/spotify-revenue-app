@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { searchArtist } from '../services/api';
 
 /**
  * ArtistInput Component - Phase 1: URL Input Only
@@ -19,6 +20,15 @@ function ArtistInput({ onSubmit, loading }) {
   
   // State to store any validation error messages
   const [error, setError] = useState('');
+  
+  // Autocomplete states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [inputMode, setInputMode] = useState('url'); // 'url' or 'search'
+  
+  const searchRef = useRef(null);
 
   /**
    * Handles form submission for URL input
@@ -49,6 +59,63 @@ function ArtistInput({ onSubmit, loading }) {
     onSubmit(url.trim());
   };
 
+  // Debounced search function
+  useEffect(() => {
+    if (inputMode === 'search' && searchQuery.length >= 2) {
+      const timeoutId = setTimeout(async () => {
+        setIsSearching(true);
+        try {
+          const results = await searchArtist(searchQuery, 5);
+          setSuggestions(results);
+          setShowSuggestions(true);
+        } catch (error) {
+          console.error('Search error:', error);
+          setSuggestions([]);
+        } finally {
+          setIsSearching(false);
+        }
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery, inputMode]);
+
+  // Handle artist selection from suggestions
+  const handleArtistSelect = (artist) => {
+    setSearchQuery(artist.name);
+    setUrl(artist.url);
+    setShowSuggestions(false);
+    setError('');
+  };
+
+  // Handle input mode switch
+  const switchToSearch = () => {
+    setInputMode('search');
+    setUrl('');
+    setError('');
+  };
+
+  const switchToUrl = () => {
+    setInputMode('url');
+    setSearchQuery('');
+    setSuggestions([]);
+    setShowSuggestions(false);
+    setError('');
+  };
+
+  // Handle search form submit
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (url && url.includes('open.spotify.com')) {
+      onSubmit(url.trim());
+    } else if (suggestions.length > 0) {
+      handleArtistSelect(suggestions[0]);
+    }
+  };
+
   return (
     <div className="artist-input">
       {/* Spotify-inspired logo */}
@@ -67,37 +134,106 @@ function ArtistInput({ onSubmit, loading }) {
         Découvrez combien gagnent vos artistes préférés sur Spotify
       </p>
       
-      {/* The main form for URL input */}
-      <form onSubmit={handleSubmit} className="input-form">
-        <div className="input-group">
-          {/* 
-            URL input field - using HTML5 'url' type for basic browser validation
-            This is a "controlled component" - React manages the value through state
-          */}
-          <input
-            type="url" // HTML5 input type that provides basic URL validation
-            value={url} // The input's value is controlled by our React state
-            onChange={(e) => setUrl(e.target.value)} // Update state when user types
-            placeholder="https://open.spotify.com/artist/..."
-            className="url-input"
-            disabled={loading}
-          />
+      {/* Mode selector tabs */}
+      <div className="input-mode-tabs">
+        <button 
+          className={`tab ${inputMode === 'search' ? 'active' : ''}`}
+          onClick={switchToSearch}
+          type="button"
+        >
+          🔍 Rechercher par nom
+        </button>
+        <button 
+          className={`tab ${inputMode === 'url' ? 'active' : ''}`}
+          onClick={switchToUrl}
+          type="button"
+        >
+          🔗 URL Spotify
+        </button>
+      </div>
+
+      {/* Search mode */}
+      {inputMode === 'search' && (
+        <form onSubmit={handleSearchSubmit} className="input-form">
+          <div className="input-group search-input-group" ref={searchRef}>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tapez le nom d'un artiste..."
+              className="search-input"
+              disabled={loading}
+            />
+            
+            <button 
+              type="submit" 
+              className="analyze-button"
+              disabled={loading || (!url && suggestions.length === 0)}
+            >
+              {loading ? 'Analyse en cours...' : 'Analyser'}
+            </button>
+
+            {/* Suggestions dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="suggestions-dropdown">
+                {suggestions.map((artist) => (
+                  <div 
+                    key={artist.id}
+                    className="suggestion-item"
+                    onClick={() => handleArtistSelect(artist)}
+                  >
+                    <div className="artist-avatar">
+                      {artist.image ? (
+                        <img src={artist.image} alt={artist.name} />
+                      ) : (
+                        <div className="avatar-placeholder">🎵</div>
+                      )}
+                    </div>
+                    <div className="artist-info">
+                      <span className="artist-name">{artist.name}</span>
+                      <span className="artist-followers">
+                        {artist.followers?.toLocaleString()} followers
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {isSearching && (
+              <div className="search-loading">Recherche en cours...</div>
+            )}
+          </div>
           
-          <button 
-            type="submit" 
-            className="analyze-button"
-            disabled={loading || !url.trim()}
-          >
-            {loading ? 'Analyse en cours...' : 'Analyser'}
-          </button>
-        </div>
-        
-        {/* 
-          Conditional rendering: only show error message if there is one
-          The && operator means: if error exists, render the div
-        */}
-        {error && <div className="error-message">{error}</div>}
-      </form>
+          {error && <div className="error-message">{error}</div>}
+        </form>
+      )}
+
+      {/* URL mode */}
+      {inputMode === 'url' && (
+        <form onSubmit={handleSubmit} className="input-form">
+          <div className="input-group">
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://open.spotify.com/artist/..."
+              className="url-input"
+              disabled={loading}
+            />
+            
+            <button 
+              type="submit" 
+              className="analyze-button"
+              disabled={loading || !url.trim()}
+            >
+              {loading ? 'Analyse en cours...' : 'Analyser'}
+            </button>
+          </div>
+          
+          {error && <div className="error-message">{error}</div>}
+        </form>
+      )}
 
     </div>
   );
