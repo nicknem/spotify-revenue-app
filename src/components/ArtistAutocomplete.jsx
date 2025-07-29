@@ -137,17 +137,19 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
       }}
     >
-      <div style={{
+      <div className="artist-content" style={{
         display: 'flex',
+        flexDirection: 'row',
         alignItems: 'center',
         maxWidth: '400px',
-        width: '100%'
+        width: '100%',
+        gap: '12px'
       }}>
         <div className="artist-avatar-box" style={{
           width: '56px', 
           height: '56px', 
-          marginRight: '12px',
-          flexShrink: 0
+          flexShrink: 0,
+          border: '1px solid red'
         }}>
           {artist.image ? (
             <img src={artist.image} alt={artist.name} style={{
@@ -176,7 +178,8 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          border: '1px solid green'
         }}>
           <div style={{
             margin: 0, 

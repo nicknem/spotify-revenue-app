@@ -23,7 +23,7 @@ body {
 }
 
 /* Force tous les divs en block sauf les containers principaux */
-div:not(.app):not(.app-container):not(.input-group):not(.metric-item):not(.track-item):not(.artist-suggestion):not(.artist-avatar-box):not(.artist-info-box), 
+div:not(.app):not(.app-container):not(.input-group):not(.metric-item):not(.track-item):not(.artist-suggestion):not(.artist-avatar-box):not(.artist-info-box):not(.artist-content), 
 section, article, main, aside {
   display: block !important;
   width: 100% !important;
