@@ -171,18 +171,22 @@ function ArtistInput({ onSubmit, loading }) {
                 suggestions = tableau d'objets artist venant de searchArtist()
                 Chaque artist contient : {id, name, image, followers, url, etc.}
               */}
-              {suggestions.map((artist) => (
-                
-                {/* 
-                  LIGNE INDIVIDUELLE pour un artiste
-                  - key={artist.id} : obligatoire pour React dans les listes
-                  - className="suggestion-item" : style CSS pour la ligne
-                  - onClick : quand on clique, ça lance handleArtistSelect(artist)
-                */}
+              
+              {/* DEBUG: Affichons les données brutes */}
+              <div style={{background: 'yellow', color: 'black', padding: '10px', margin: '5px'}}>
+                DEBUG: {suggestions.length} suggestions trouvées
+                <br />
+                Première suggestion: {JSON.stringify(suggestions[0], null, 2)}
+              </div>
+              
+              {suggestions.map((artist, index) => {
+                console.log('🎵 Rendu artiste:', index, artist);
+                return (
                 <div 
                   key={artist.id}
                   className="suggestion-item"
                   onClick={() => handleArtistSelect(artist)}
+                  style={{background: 'orange', border: '2px solid black', margin: '2px'}}
                 >
                   
                   {/* 
@@ -274,7 +278,8 @@ function ArtistInput({ onSubmit, loading }) {
                     
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
