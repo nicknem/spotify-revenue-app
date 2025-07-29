@@ -205,7 +205,11 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
     <div className="artist-autocomplete">
       <form onSubmit={handleSubmit} className="input-form">
         <div className="input-group">
-          <div className="input-container" style={{position: 'relative'}}>
+          <div className="input-container" style={{
+            position: 'relative',
+            maxWidth: '480px',
+            width: '100%'
+          }}>
             <input
               ref={inputRef}
               type="text"
@@ -217,6 +221,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
               placeholder="Nom d'artiste ou URL Spotify..."
               className="url-input"
               disabled={loading}
+              style={{width: '100%'}}
             />
             
             {showSuggestions && (query.length >= 2 || trendingArtists.length > 0) && (
@@ -231,7 +236,8 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 maxHeight: '320px',
                 overflowY: 'auto',
-                zIndex: 1000
+                zIndex: 1000,
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
               }}>
                 
                 {/* Résultats de recherche */}
