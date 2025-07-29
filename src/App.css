@@ -792,6 +792,8 @@ p {
   transition: all 0.2s ease;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 52px;
+  background: rgba(255, 0, 0, 0.2) !important;
+  border-left: 4px solid red !important;
 }
 
 .suggestion-item:last-child {
@@ -802,7 +804,7 @@ p {
   background: rgba(29, 185, 84, 0.1);
 }
 
-/* Suggestion image container - FORCE small size */
+/* Suggestion image container - FORCE small size - VERSION 2 */
 .suggestion-image-container {
   width: 32px !important;
   height: 32px !important;
@@ -812,8 +814,9 @@ p {
   flex-shrink: 0;
   overflow: hidden;
   border-radius: 50%;
-  background: #333;
-  border: 3px solid red !important;
+  background: red !important;
+  border: 5px solid lime !important;
+  box-shadow: 0 0 10px yellow !important;
 }
 
 .suggestion-image {
