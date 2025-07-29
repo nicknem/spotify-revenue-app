@@ -152,27 +152,89 @@ function ArtistInput({ onSubmit, loading }) {
             {loading ? 'Analyse en cours...' : 'Analyser'}
           </button>
 
-          {/* Suggestions dropdown - only show for non-URL searches */}
+          {/* 
+            DROPDOWN DES SUGGESTIONS D'ARTISTES
+            ===================================
+            
+            Cette section s'affiche UNIQUEMENT quand :
+            1. showSuggestions = true (défini dans useEffect quand API répond)
+            2. suggestions.length > 0 (on a reçu des artistes de l'API)
+            3. !isSpotifyUrl(inputValue) (l'utilisateur tape un nom, pas une URL)
+          */}
           {showSuggestions && suggestions.length > 0 && !isSpotifyUrl(inputValue) && (
+            
+            {/* CONTAINER PRINCIPAL du dropdown - positionné sous la barre de recherche */}
             <div className="suggestions-dropdown">
+              
+              {/* 
+                BOUCLE sur chaque artiste retourné par l'API Spotify
+                suggestions = tableau d'objets artist venant de searchArtist()
+                Chaque artist contient : {id, name, image, followers, url, etc.}
+              */}
               {suggestions.map((artist) => (
+                
+                {/* 
+                  LIGNE INDIVIDUELLE pour un artiste
+                  - key={artist.id} : obligatoire pour React dans les listes
+                  - className="suggestion-item" : style CSS pour la ligne
+                  - onClick : quand on clique, ça lance handleArtistSelect(artist)
+                */}
                 <div 
                   key={artist.id}
                   className="suggestion-item"
                   onClick={() => handleArtistSelect(artist)}
                 >
+                  
+                  {/* 
+                    DIV SÉPARÉE POUR L'IMAGE UNIQUEMENT
+                    ===================================
+                    Cette div devrait faire 32px × 32px selon notre CSS
+                    C'est ici que le problème se situe probablement
+                  */}
                   <div className="suggestion-image-container">
+                    
+                    {/* TEST : est-ce que l'artiste a une image ? */}
                     {artist.image ? (
+                      
+                      {/* 
+                        CAS 1: L'artiste a une photo
+                        - src={artist.image} : URL de l'image Spotify
+                        - className="suggestion-image" : style CSS pour l'image
+                        - Cette img devrait faire 32px × 32px et être ronde
+                      */}
                       <img src={artist.image} alt={artist.name} className="suggestion-image" />
+                      
                     ) : (
+                      
+                      {/* 
+                        CAS 2: Pas d'image disponible
+                        - Affiche une icône musicale 🎵
+                        - className="suggestion-image-placeholder" : même taille que l'image
+                      */}
                       <div className="suggestion-image-placeholder">🎵</div>
+                      
                     )}
                   </div>
+                  
+                  {/* 
+                    DIV SÉPARÉE POUR LE TEXTE UNIQUEMENT
+                    ====================================
+                    Cette div prend le reste de l'espace (flex: 1 dans le CSS)
+                  */}
                   <div className="suggestion-text">
+                    
+                    {/* NOM DE L'ARTISTE - exemple: "Daft Punk" */}
                     <div className="suggestion-name">{artist.name}</div>
+                    
+                    {/* 
+                      NOMBRE DE FOLLOWERS - exemple: "10,673,340 followers"
+                      .toLocaleString() formate le nombre avec des virgules
+                      Le ? vérifie que followers existe avant d'appeler toLocaleString()
+                    */}
                     <div className="suggestion-followers">
                       {artist.followers?.toLocaleString()} followers
                     </div>
+                    
                   </div>
                 </div>
               ))}

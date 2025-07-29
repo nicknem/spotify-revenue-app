@@ -813,6 +813,7 @@ p {
   overflow: hidden;
   border-radius: 50%;
   background: #333;
+  border: 3px solid red !important;
 }
 
 .suggestion-image {
