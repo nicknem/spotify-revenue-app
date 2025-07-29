@@ -128,6 +128,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         display: 'flex', 
         flexDirection: 'row',
         alignItems: 'center', 
+        justifyContent: 'center',
         padding: '10px 16px',
         width: '100%',
         boxSizing: 'border-box',
@@ -136,54 +137,61 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
       }}
     >
-      <div className="artist-avatar-box" style={{
-        width: '56px', 
-        height: '56px', 
-        marginRight: '16px',
-        flexShrink: 0
-      }}>
-        {artist.image ? (
-          <img src={artist.image} alt={artist.name} style={{
-            width: '56px', 
-            height: '56px', 
-            borderRadius: '50%', 
-            objectFit: 'cover',
-            display: 'block',
-            border: '2px solid rgba(255, 255, 255, 0.1)'
-          }} />
-        ) : (
-          <div className="avatar-placeholder" style={{
-            width: '56px', 
-            height: '56px', 
-            borderRadius: '50%', 
-            background: 'rgba(255, 255, 255, 0.1)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            fontSize: '20px',
-            border: '2px solid rgba(255, 255, 255, 0.1)'
-          }}>🎵</div>
-        )}
-      </div>
-      <div className="artist-info-box" style={{
-        flex: 1,
+      <div style={{
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center'
+        alignItems: 'center',
+        maxWidth: '400px',
+        width: '100%'
       }}>
-        <div style={{
-          margin: 0, 
-          fontSize: '15px',
-          fontWeight: '600',
-          color: '#ffffff'
-        }}>{artist.name}</div>
-        <div style={{
-          margin: 0,
-          fontSize: '13px',
-          color: '#b3b3b3'
+        <div className="artist-avatar-box" style={{
+          width: '56px', 
+          height: '56px', 
+          marginRight: '12px',
+          flexShrink: 0
         }}>
-          {artist.followers?.toLocaleString()} auditeurs
-          {artist.genres?.length > 0 && ` • ${artist.genres[0]}`}
+          {artist.image ? (
+            <img src={artist.image} alt={artist.name} style={{
+              width: '56px', 
+              height: '56px', 
+              borderRadius: '50%', 
+              objectFit: 'cover',
+              display: 'block',
+              border: '2px solid rgba(255, 255, 255, 0.1)'
+            }} />
+          ) : (
+            <div className="avatar-placeholder" style={{
+              width: '56px', 
+              height: '56px', 
+              borderRadius: '50%', 
+              background: 'rgba(255, 255, 255, 0.1)', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              fontSize: '20px',
+              border: '2px solid rgba(255, 255, 255, 0.1)'
+            }}>🎵</div>
+          )}
+        </div>
+        <div className="artist-info-box" style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            margin: 0, 
+            fontSize: '15px',
+            fontWeight: '600',
+            color: '#ffffff'
+          }}>{artist.name}</div>
+          <div style={{
+            margin: 0,
+            fontSize: '13px',
+            color: '#b3b3b3'
+          }}>
+            {artist.followers?.toLocaleString()} auditeurs
+            {artist.genres?.length > 0 && ` • ${artist.genres[0]}`}
+          </div>
         </div>
       </div>
     </div>
