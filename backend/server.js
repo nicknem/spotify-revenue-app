@@ -54,6 +54,9 @@ app.post('/api/artist-revenue', async (req, res) => {
     
     console.log(`🎯 Scraping: ${finalUrl}`);
     
+    // Extraire l'ID artiste pour récupérer les infos API
+    const extractedId = extractArtistId(finalUrl);
+    
     // Lancer le scraping avec ton algorithme
     const startTime = Date.now();
     const result = await scrapeArtistRevenue(finalUrl);
@@ -61,12 +64,29 @@ app.post('/api/artist-revenue', async (req, res) => {
     
     console.log(`✅ Scraping terminé en ${duration}ms`);
     
-    // Réponse avec tes données + métadonnées
+    // Enrichir avec les données de l'API Spotify si possible
+    let artistInfo = null;
+    try {
+      if (extractedId) {
+        artistInfo = await getArtistInfo(extractedId);
+        console.log(`✅ Infos artiste récupérées: ${artistInfo.name}`);
+      }
+    } catch (error) {
+      console.log(`⚠️ Impossible de récupérer les infos artiste: ${error.message}`);
+    }
+    
+    // Réponse avec tes données + métadonnées enrichies
     res.json({
       success: true,
       duration: `${duration}ms`,
       url: finalUrl,
-      data: result,
+      data: {
+        ...result,
+        // Ajouter les infos artiste si disponibles
+        artistName: artistInfo?.name || null,
+        artistImage: artistInfo?.image || null,
+        artistId: extractedId || null
+      },
       timestamp: new Date().toISOString()
     });
     

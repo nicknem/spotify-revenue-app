@@ -149,16 +149,17 @@ p {
   background: linear-gradient(135deg, #1db954 0%, #1ed760 100%);
   border: none;
   color: #000000;
-  padding: 16px 32px;
+  padding: 18px 36px;
   font-size: 16px;
   font-family: inherit;
   font-weight: 700;
   cursor: pointer;
-  border-radius: 32px;
+  border-radius: 50px;
   transition: all 0.3s ease;
+  margin-top: 20px;
+  box-shadow: 0 6px 24px rgba(29, 185, 84, 0.4);
   letter-spacing: 0;
   text-transform: none;
-  box-shadow: 0 4px 16px rgba(29, 185, 84, 0.3);
 }
 
 .analyze-button:hover:not(:disabled) {
@@ -731,67 +732,39 @@ p {
   }
 }
 
-/* ===== AUTOCOMPLETE STYLES ===== */
+/* ===== UNIFIED SEARCH STYLES ===== */
 
-/* Mode selector tabs */
-.input-mode-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  padding: 4px;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.input-mode-tabs .tab {
-  flex: 1;
-  padding: 12px 16px;
-  border: none;
-  background: transparent;
-  color: #b3b3b3;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.input-mode-tabs .tab:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-}
-
-.input-mode-tabs .tab.active {
-  background: #1db954;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-/* Search input group */
-.search-input-group {
+/* Unified search input group */
+.unified-search-group {
   position: relative;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.search-input {
+.unified-search-input {
   width: 100%;
-  padding: 16px 20px;
+  padding: 18px 24px;
   font-size: 16px;
   border: 2px solid #404040;
   border-radius: 50px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
   outline: none;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
-.search-input:focus {
+.unified-search-input:focus {
   border-color: #1db954;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.15), 0 8px 32px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.unified-search-input::placeholder {
+  color: #888888;
+  font-weight: 400;
 }
 
 /* Suggestions dropdown */
@@ -800,15 +773,15 @@ p {
   top: 100%;
   left: 0;
   right: 0;
-  background: rgba(40, 40, 40, 0.95);
-  backdrop-filter: blur(20px);
+  background: rgba(30, 30, 30, 0.98);
+  backdrop-filter: blur(30px);
   border: 1px solid #404040;
-  border-radius: 12px;
-  margin-top: 8px;
-  max-height: 300px;
+  border-radius: 16px;
+  margin-top: 12px;
+  max-height: 320px;
   overflow-y: auto;
   z-index: 1000;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
 }
 
 .suggestion-item {
@@ -921,15 +894,15 @@ p {
   font-size: 14px;
 }
 
-/* Mobile responsiveness for autocomplete */
+/* Mobile responsiveness for unified search */
 @media (max-width: 768px) {
-  .input-mode-tabs {
+  .unified-search-group {
     max-width: 100%;
   }
   
-  .input-mode-tabs .tab {
-    padding: 10px 12px;
-    font-size: 13px;
+  .unified-search-input {
+    padding: 16px 20px;
+    font-size: 15px;
   }
   
   .artist-avatar {
@@ -952,5 +925,10 @@ p {
   
   .artist-details h2 {
     font-size: 20px;
+  }
+  
+  .analyze-button {
+    padding: 16px 28px;
+    font-size: 15px;
   }
 }

@@ -15,106 +15,104 @@ import { searchArtist } from '../services/api';
  * - loading: Boolean indicating if analysis is in progress
  */
 function ArtistInput({ onSubmit, loading }) {
-  // State to store the current URL input value
-  const [url, setUrl] = useState('https://open.spotify.com/intl-fr/artist/5imgjumuHUmnzZF3vOEmso');
-  
-  // State to store any validation error messages
+  // Single unified input state
+  const [inputValue, setInputValue] = useState('');
   const [error, setError] = useState('');
   
   // Autocomplete states
-  const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [inputMode, setInputMode] = useState('url'); // 'url' or 'search'
   
-  const searchRef = useRef(null);
+  const inputRef = useRef(null);
 
-  /**
-   * Handles form submission for URL input
-   * - Prevents default form behavior (page refresh)
-   * - Validates the URL format to ensure it's a valid Spotify artist URL
-   * - Calls the parent's onSubmit function if validation passes
-   */
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Stop the browser from refreshing the page
-    setError(''); // Clear any previous error messages
-
-    // Basic validation: check if the input field is empty
-    if (!url.trim()) {
-      setError('Veuillez entrer une URL Spotify');
-      return;
-    }
-
-    // Validate that this is actually a Spotify artist URL
-    // The URL must contain the specific pattern for Spotify artist pages
-    // Support both standard and internationalized URLs (e.g., /intl-fr/)
-    if (!url.includes('open.spotify.com') || !url.includes('/artist/')) {
-      setError('URL Spotify invalide. Format attendu: https://open.spotify.com/artist/...');
-      return;
-    }
-
-    // If all validation passes, send the cleaned URL to the parent component
-    // The trim() removes any extra whitespace the user might have added
-    onSubmit(url.trim());
+  // Detect if input is URL or artist name
+  const isSpotifyUrl = (input) => {
+    return input.includes('open.spotify.com') && input.includes('/artist/');
   };
 
-  // Debounced search function
-  useEffect(() => {
-    if (inputMode === 'search' && searchQuery.length >= 2) {
-      const timeoutId = setTimeout(async () => {
-        setIsSearching(true);
-        try {
-          const results = await searchArtist(searchQuery, 5);
-          setSuggestions(results);
-          setShowSuggestions(true);
-        } catch (error) {
-          console.error('Search error:', error);
-          setSuggestions([]);
-        } finally {
-          setIsSearching(false);
-        }
-      }, 300);
+  // Unified form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError('');
 
-      return () => clearTimeout(timeoutId);
-    } else {
+    if (!inputValue.trim()) {
+      setError('Recherchez un artiste ou collez une URL Spotify');
+      return;
+    }
+
+    // If it's a Spotify URL, submit directly
+    if (isSpotifyUrl(inputValue)) {
+      onSubmit(inputValue.trim());
+      return;
+    }
+
+    // If it's a search and we have a selected suggestion, use it
+    if (suggestions.length > 0) {
+      const firstSuggestion = suggestions[0];
+      onSubmit(firstSuggestion.url);
+      return;
+    }
+
+    // If no suggestions, show error
+    setError('Aucun artiste trouvé. Essayez une URL Spotify ou un autre nom.');
+  };
+
+  // Debounced search for artist names
+  useEffect(() => {
+    const trimmedValue = inputValue.trim();
+    
+    // Don't search if it's a URL or too short
+    if (isSpotifyUrl(trimmedValue) || trimmedValue.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
+      return;
     }
-  }, [searchQuery, inputMode]);
+
+    const timeoutId = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const results = await searchArtist(trimmedValue, 5);
+        setSuggestions(results);
+        setShowSuggestions(results.length > 0);
+      } catch (error) {
+        console.error('Search error:', error);
+        setSuggestions([]);
+        setShowSuggestions(false);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [inputValue]);
 
   // Handle artist selection from suggestions
   const handleArtistSelect = (artist) => {
-    setSearchQuery(artist.name);
-    setUrl(artist.url);
+    setInputValue(artist.name);
     setShowSuggestions(false);
     setError('');
+    // Submit immediately when artist is selected
+    setTimeout(() => onSubmit(artist.url), 100);
   };
 
-  // Handle input mode switch
-  const switchToSearch = () => {
-    setInputMode('search');
-    setUrl('');
+  // Handle input changes
+  const handleInputChange = (e) => {
+    setInputValue(e.target.value);
     setError('');
   };
 
-  const switchToUrl = () => {
-    setInputMode('url');
-    setSearchQuery('');
-    setSuggestions([]);
-    setShowSuggestions(false);
-    setError('');
-  };
+  // Hide suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (inputRef.current && !inputRef.current.contains(event.target)) {
+        setShowSuggestions(false);
+      }
+    };
 
-  // Handle search form submit
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (url && url.includes('open.spotify.com')) {
-      onSubmit(url.trim());
-    } else if (suggestions.length > 0) {
-      handleArtistSelect(suggestions[0]);
-    }
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="artist-input">
@@ -134,106 +132,60 @@ function ArtistInput({ onSubmit, loading }) {
         Découvrez combien gagnent vos artistes préférés sur Spotify
       </p>
       
-      {/* Mode selector tabs */}
-      <div className="input-mode-tabs">
-        <button 
-          className={`tab ${inputMode === 'search' ? 'active' : ''}`}
-          onClick={switchToSearch}
-          type="button"
-        >
-          🔍 Rechercher par nom
-        </button>
-        <button 
-          className={`tab ${inputMode === 'url' ? 'active' : ''}`}
-          onClick={switchToUrl}
-          type="button"
-        >
-          🔗 URL Spotify
-        </button>
-      </div>
+      {/* Unified search form */}
+      <form onSubmit={handleSubmit} className="input-form">
+        <div className="input-group unified-search-group" ref={inputRef}>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            placeholder="Tapez le nom d'un artiste ou collez une URL Spotify..."
+            className="unified-search-input"
+            disabled={loading}
+          />
+          
+          <button 
+            type="submit" 
+            className="analyze-button"
+            disabled={loading || !inputValue.trim()}
+          >
+            {loading ? 'Analyse en cours...' : 'Analyser'}
+          </button>
 
-      {/* Search mode */}
-      {inputMode === 'search' && (
-        <form onSubmit={handleSearchSubmit} className="input-form">
-          <div className="input-group search-input-group" ref={searchRef}>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tapez le nom d'un artiste..."
-              className="search-input"
-              disabled={loading}
-            />
-            
-            <button 
-              type="submit" 
-              className="analyze-button"
-              disabled={loading || (!url && suggestions.length === 0)}
-            >
-              {loading ? 'Analyse en cours...' : 'Analyser'}
-            </button>
-
-            {/* Suggestions dropdown */}
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="suggestions-dropdown">
-                {suggestions.map((artist) => (
-                  <div 
-                    key={artist.id}
-                    className="suggestion-item"
-                    onClick={() => handleArtistSelect(artist)}
-                  >
-                    <div className="artist-avatar">
-                      {artist.image ? (
-                        <img src={artist.image} alt={artist.name} />
-                      ) : (
-                        <div className="avatar-placeholder">🎵</div>
-                      )}
-                    </div>
-                    <div className="artist-info">
-                      <span className="artist-name">{artist.name}</span>
-                      <span className="artist-followers">
-                        {artist.followers?.toLocaleString()} followers
-                      </span>
-                    </div>
+          {/* Suggestions dropdown - only show for non-URL searches */}
+          {showSuggestions && suggestions.length > 0 && !isSpotifyUrl(inputValue) && (
+            <div className="suggestions-dropdown">
+              {suggestions.map((artist) => (
+                <div 
+                  key={artist.id}
+                  className="suggestion-item"
+                  onClick={() => handleArtistSelect(artist)}
+                >
+                  <div className="artist-avatar">
+                    {artist.image ? (
+                      <img src={artist.image} alt={artist.name} />
+                    ) : (
+                      <div className="avatar-placeholder">🎵</div>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
+                  <div className="artist-info">
+                    <span className="artist-name">{artist.name}</span>
+                    <span className="artist-followers">
+                      {artist.followers?.toLocaleString()} followers
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
-            {isSearching && (
-              <div className="search-loading">Recherche en cours...</div>
-            )}
-          </div>
-          
-          {error && <div className="error-message">{error}</div>}
-        </form>
-      )}
-
-      {/* URL mode */}
-      {inputMode === 'url' && (
-        <form onSubmit={handleSubmit} className="input-form">
-          <div className="input-group">
-            <input
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://open.spotify.com/artist/..."
-              className="url-input"
-              disabled={loading}
-            />
-            
-            <button 
-              type="submit" 
-              className="analyze-button"
-              disabled={loading || !url.trim()}
-            >
-              {loading ? 'Analyse en cours...' : 'Analyser'}
-            </button>
-          </div>
-          
-          {error && <div className="error-message">{error}</div>}
-        </form>
-      )}
+          {isSearching && !isSpotifyUrl(inputValue) && (
+            <div className="search-loading">Recherche en cours...</div>
+          )}
+        </div>
+        
+        {error && <div className="error-message">{error}</div>}
+      </form>
 
     </div>
   );
