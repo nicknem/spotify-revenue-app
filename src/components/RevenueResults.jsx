@@ -40,16 +40,35 @@ function RevenueResults({ results, onReset }) {
   return (
     <div className="revenue-results">
       {/* En-tête avec artiste */}
-      <div className="results-header">
-        <div className="artist-header">
+      <div className="results-header" style={{
+        display: 'flex',
+        justifyContent: 'center',
+        marginBottom: '30px'
+      }}>
+        <div className="artist-header" style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '20px',
+          maxWidth: '400px'
+        }}>
           {artistImage && (
-            <div className="artist-image">
-              <img src={artistImage} alt={artistName || 'Artiste'} />
+            <div className="artist-image" style={{
+              width: '80px',
+              height: '80px',
+              flexShrink: 0
+            }}>
+              <img src={artistImage} alt={artistName || 'Artiste'} style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: '50%',
+                border: '3px solid rgba(29, 185, 84, 0.3)'
+              }} />
             </div>
           )}
           <div className="artist-details">
-            <h2>{artistName || 'Artiste analysé'}</h2>
-            <p>Analyse terminée en {duration}</p>
+            <h2 style={{margin: '0 0 8px 0'}}>{artistName || 'Artiste analysé'}</h2>
+            <p style={{margin: 0, color: '#b3b3b3'}}>Analyse terminée en {duration}</p>
           </div>
         </div>
       </div>
