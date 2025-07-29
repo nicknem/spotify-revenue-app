@@ -124,6 +124,8 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
       key={artist.id}
       className="artist-suggestion"
       onClick={() => handleArtistSelect(artist)}
+      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(29, 185, 84, 0.1)'}
+      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
       style={{
         display: 'flex', 
         flexDirection: 'row',
@@ -134,7 +136,8 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         boxSizing: 'border-box',
         cursor: 'pointer',
         transition: 'background 0.2s ease',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        background: isSelected ? 'rgba(29, 185, 84, 0.1)' : 'transparent'
       }}
     >
       <div className="artist-content" style={{
@@ -148,8 +151,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         <div className="artist-avatar-box" style={{
           width: '56px', 
           height: '56px', 
-          flexShrink: 0,
-          border: '1px solid red'
+          flexShrink: 0
         }}>
           {artist.image ? (
             <img src={artist.image} alt={artist.name} style={{
@@ -178,8 +180,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          border: '1px solid green'
+          justifyContent: 'center'
         }}>
           <div style={{
             margin: 0, 
@@ -204,7 +205,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
     <div className="artist-autocomplete">
       <form onSubmit={handleSubmit} className="input-form">
         <div className="input-group">
-          <div className="input-container">
+          <div className="input-container" style={{position: 'relative'}}>
             <input
               ref={inputRef}
               type="text"
@@ -219,7 +220,19 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
             />
             
             {showSuggestions && (query.length >= 2 || trendingArtists.length > 0) && (
-              <div className="autocomplete-dropdown" ref={suggestionsRef}>
+              <div className="autocomplete-dropdown" ref={suggestionsRef} style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                marginTop: '8px',
+                background: 'rgba(30, 30, 30, 0.98)',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                maxHeight: '320px',
+                overflowY: 'auto',
+                zIndex: 1000
+              }}>
                 
                 {/* Résultats de recherche */}
                 {query.length >= 2 && (
