@@ -133,12 +133,14 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         boxSizing: 'border-box'
       }}
     >
-      <div className="artist-avatar" style={{
+      <div style={{
         width: '40px', 
         height: '40px', 
         marginRight: '12px',
         flexShrink: 0,
-        border: '2px solid lime'
+        border: '2px solid lime',
+        background: 'yellow',
+        display: 'inline-block'
       }}>
         {artist.image ? (
           <img src={artist.image} alt={artist.name} style={{
@@ -161,12 +163,14 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
           }}>🎵</div>
         )}
       </div>
-      <div className="artist-info" style={{
+      <div style={{
         flex: 1,
-        border: '2px solid green'
+        border: '2px solid green',
+        background: 'pink',
+        display: 'inline-block'
       }}>
-        <div className="artist-name" style={{margin: 0}}>{artist.name} DEBUG</div>
-        <div className="artist-details" style={{margin: 0}}>
+        <div style={{margin: 0, color: 'black'}}>{artist.name} DEBUG</div>
+        <div style={{margin: 0, color: 'black'}}>
           {artist.followers?.toLocaleString()} auditeurs
           {artist.genres?.length > 0 && ` • ${artist.genres[0]}`}
         </div>
