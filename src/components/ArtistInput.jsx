@@ -265,7 +265,7 @@ function ArtistInput({ onSubmit, loading }) {
                   <div className="suggestion-text">
                     
                     {/* NOM DE L'ARTISTE - exemple: "Daft Punk" */}
-                    <div className="suggestion-name">{artist.name}</div>
+                    <div className="suggestion-name">{artist.name} DEBUG</div>
                     
                     {/* 
                       NOMBRE DE FOLLOWERS - exemple: "10,673,340 followers"
