@@ -124,17 +124,42 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
       key={artist.id}
       className={`autocomplete-item ${isSelected ? 'selected' : ''}`}
       onClick={() => handleArtistSelect(artist)}
+      style={{display: 'flex', alignItems: 'center', padding: '8px 12px'}}
     >
-      <div className="artist-avatar" style={{width: '32px', height: '32px', background: 'red', border: '2px solid lime'}}>
+      <div className="artist-avatar" style={{
+        width: '40px', 
+        height: '40px', 
+        marginRight: '12px',
+        flexShrink: 0,
+        border: '2px solid lime'
+      }}>
         {artist.image ? (
-          <img src={artist.image} alt={artist.name} style={{width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover'}} />
+          <img src={artist.image} alt={artist.name} style={{
+            width: '40px', 
+            height: '40px', 
+            borderRadius: '50%', 
+            objectFit: 'cover',
+            display: 'block'
+          }} />
         ) : (
-          <div className="avatar-placeholder" style={{width: '32px', height: '32px', borderRadius: '50%', background: 'blue', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>🎵</div>
+          <div className="avatar-placeholder" style={{
+            width: '40px', 
+            height: '40px', 
+            borderRadius: '50%', 
+            background: 'blue', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            fontSize: '16px'
+          }}>🎵</div>
         )}
       </div>
-      <div className="artist-info">
-        <div className="artist-name">{artist.name} DEBUG</div>
-        <div className="artist-details">
+      <div className="artist-info" style={{
+        flex: 1,
+        border: '2px solid green'
+      }}>
+        <div className="artist-name" style={{margin: 0}}>{artist.name} DEBUG</div>
+        <div className="artist-details" style={{margin: 0}}>
           {artist.followers?.toLocaleString()} auditeurs
           {artist.genres?.length > 0 && ` • ${artist.genres[0]}`}
         </div>
