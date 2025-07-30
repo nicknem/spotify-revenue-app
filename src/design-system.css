@@ -67,6 +67,9 @@ body {
   font-size: var(--font-size-md);
   overflow-x: hidden;
   min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
 }
 
 /* ===== LAYOUT UTILITIES ===== */

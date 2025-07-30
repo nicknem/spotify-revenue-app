@@ -18,6 +18,9 @@
   width: 100%;
   max-width: 1000px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   flex: 1;
 }
 
@@ -43,7 +46,7 @@ h2 {
 
 .subtitle {
   color: var(--spotify-light-gray);
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--space-lg);
   font-size: var(--font-size-xl);
   font-weight: 400;
 }
@@ -61,11 +64,12 @@ h2 {
 
 /* ===== SEARCH SECTION ===== */
 .search-section {
-  min-height: 80vh;
+  min-height: auto;
+  padding: var(--space-md) 0;
 }
 
 .search-form {
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
 }
 
 .search-input-container {
