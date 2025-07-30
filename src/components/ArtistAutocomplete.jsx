@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { searchArtist, getTrendingArtists } from '../services/api';
 
 function ArtistAutocomplete({ onSelectArtist, loading }) {
@@ -13,19 +13,22 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
 
-  // Charger les artistes tendance au démarrage
+  // Charger les artistes tendance seulement quand l'input est vide (lazy loading)
   useEffect(() => {
     const loadTrendingArtists = async () => {
-      try {
-        const trending = await getTrendingArtists();
-        setTrendingArtists(trending.slice(0, 8)); // Limite à 8
-      } catch (error) {
-        console.error('Erreur chargement tendances:', error);
+      // Ne charger que si on n'a pas encore les données et que l'input est vide
+      if (trendingArtists.length === 0 && query.trim().length === 0 && showSuggestions) {
+        try {
+          const trending = await getTrendingArtists();
+          setTrendingArtists(trending.slice(0, 8)); // Limite à 8
+        } catch (error) {
+          console.error('Erreur chargement tendances:', error);
+        }
       }
     };
 
     loadTrendingArtists();
-  }, []);
+  }, [query, showSuggestions, trendingArtists.length]);
 
   // Recherche avec debounce
   useEffect(() => {
@@ -47,7 +50,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
       } finally {
         setIsSearching(false);
       }
-    }, 300); // Debounce de 300ms
+    }, 500); // Debounce de 500ms pour réduire les appels API
 
     return () => clearTimeout(searchTimeout);
   }, [query]);
@@ -67,11 +70,11 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
     setTimeout(() => setShowSuggestions(false), 200);
   };
 
-  const handleArtistSelect = (artist) => {
+  const handleArtistSelect = useCallback((artist) => {
     setQuery(artist.name);
     setShowSuggestions(false);
     onSelectArtist(artist);
-  };
+  }, [onSelectArtist]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -88,10 +91,13 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
     }
   };
 
+  // Memoizer la liste combinée des suggestions pour éviter les recalculs
+  const allSuggestions = useMemo(() => {
+    return [...suggestions, ...trendingArtists];
+  }, [suggestions, trendingArtists]);
+
   const handleKeyDown = (e) => {
     if (!showSuggestions) return;
-
-    const allSuggestions = [...suggestions, ...trendingArtists];
     
     switch (e.key) {
       case 'ArrowDown':
@@ -119,7 +125,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
     }
   };
 
-  const renderArtistItem = (artist, index, isSelected) => (
+  const renderArtistItem = useCallback((artist, index, isSelected) => (
     <div
       key={artist.id}
       className={`artist-suggestion ${isSelected ? 'selected' : ''}`}
@@ -145,7 +151,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
         </div>
       </div>
     </div>
-  );
+  ), [handleArtistSelect]);
 
   return (
     <div className="search-section flex flex-col items-center justify-center">

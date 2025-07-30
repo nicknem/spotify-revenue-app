@@ -57,22 +57,35 @@ app.post('/api/artist-revenue', async (req, res) => {
     // Extraire l'ID artiste pour récupérer les infos API
     const extractedId = extractArtistId(finalUrl);
     
-    // Lancer le scraping avec ton algorithme
+    // Lancer le scraping ET l'API Spotify en parallèle pour gagner du temps
     const startTime = Date.now();
-    const result = await scrapeArtistRevenue(finalUrl);
+    
+    const [result, artistInfo] = await Promise.allSettled([
+      scrapeArtistRevenue(finalUrl),
+      extractedId ? getArtistInfo(extractedId) : Promise.resolve(null)
+    ]);
+    
     const duration = Date.now() - startTime;
+    console.log(`✅ Scraping + API terminés en ${duration}ms`);
     
-    console.log(`✅ Scraping terminé en ${duration}ms`);
+    // Gérer les résultats de Promise.allSettled
+    let scrapingResult = null;
+    let apiResult = null;
     
-    // Enrichir avec les données de l'API Spotify si possible
-    let artistInfo = null;
-    try {
-      if (extractedId) {
-        artistInfo = await getArtistInfo(extractedId);
-        console.log(`✅ Infos artiste récupérées: ${artistInfo.name}`);
+    if (result.status === 'fulfilled') {
+      scrapingResult = result.value;
+    } else {
+      console.error('❌ Erreur scraping:', result.reason);
+      throw result.reason;
+    }
+    
+    if (artistInfo.status === 'fulfilled') {
+      apiResult = artistInfo.value;
+      if (apiResult) {
+        console.log(`✅ Infos artiste récupérées: ${apiResult.name}`);
       }
-    } catch (error) {
-      console.log(`⚠️ Impossible de récupérer les infos artiste: ${error.message}`);
+    } else {
+      console.log(`⚠️ Impossible de récupérer les infos artiste: ${artistInfo.reason?.message}`);
     }
     
     // Réponse avec tes données + métadonnées enrichies
@@ -81,10 +94,10 @@ app.post('/api/artist-revenue', async (req, res) => {
       duration: `${duration}ms`,
       url: finalUrl,
       data: {
-        ...result,
+        ...scrapingResult,
         // Ajouter les infos artiste si disponibles
-        artistName: artistInfo?.name || null,
-        artistImage: artistInfo?.image || null,
+        artistName: apiResult?.name || null,
+        artistImage: apiResult?.image || null,
         artistId: extractedId || null
       },
       timestamp: new Date().toISOString()

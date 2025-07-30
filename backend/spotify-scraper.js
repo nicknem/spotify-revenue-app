@@ -4,6 +4,140 @@ const fs = require('fs');
 // Variable pour cache (comme dans ton extension)
 let cachedTop5Data = null;
 
+// Cache mémoire pour les résultats de scraping
+const scrapingCache = new Map();
+const CACHE_TTL = 60 * 60 * 1000; // 1 heure
+
+// Fonction pour générer une clé de cache à partir de l'URL
+function getCacheKey(artistUrl) {
+  // Normaliser l'URL pour gérer les différents formats
+  const match = artistUrl.match(/\/artist\/([a-zA-Z0-9]+)/);
+  return match ? match[1] : artistUrl;
+}
+
+// Fonction pour vérifier et récupérer du cache
+function getFromCache(artistUrl) {
+  const key = getCacheKey(artistUrl);
+  const cached = scrapingCache.get(key);
+  
+  if (cached) {
+    const now = Date.now();
+    if (now - cached.timestamp < CACHE_TTL) {
+      debugLog(`📦 Résultat trouvé dans le cache pour ${key}`);
+      return cached.data;
+    } else {
+      // Cache expiré, le supprimer
+      scrapingCache.delete(key);
+      debugLog(`⏰ Cache expiré pour ${key}, suppression`);
+    }
+  }
+  
+  return null;
+}
+
+// Fonction pour sauvegarder en cache
+function saveToCache(artistUrl, data) {
+  const key = getCacheKey(artistUrl);
+  scrapingCache.set(key, {
+    data: data,
+    timestamp: Date.now()
+  });
+  debugLog(`💾 Résultat sauvegardé en cache pour ${key}`);
+}
+
+// Nettoyage automatique du cache toutes les heures
+setInterval(() => {
+  const now = Date.now();
+  let cleanedCount = 0;
+  
+  for (const [key, cached] of scrapingCache.entries()) {
+    if (now - cached.timestamp >= CACHE_TTL) {
+      scrapingCache.delete(key);
+      cleanedCount++;
+    }
+  }
+  
+  if (cleanedCount > 0) {
+    debugLog(`🧹 Nettoyage automatique: ${cleanedCount} entrées supprimées du cache`);
+  }
+}, 60 * 60 * 1000); // Toutes les heures
+
+// Instance Puppeteer globale réutilisée entre requêtes
+let globalBrowser = null;
+let globalPage = null;
+let browserStartTime = null;
+const BROWSER_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+
+// Gestionnaire pour obtenir/créer une instance Puppeteer réutilisable
+async function getBrowserInstance() {
+  const now = Date.now();
+  
+  // Si le navigateur existe et n'est pas trop vieux, le réutiliser
+  if (globalBrowser && globalPage && browserStartTime && (now - browserStartTime < BROWSER_TIMEOUT)) {
+    try {
+      // Vérifier que le navigateur est toujours vivant
+      await globalPage.evaluate(() => window.location.href);
+      debugLog('♻️ Réutilisation de l\'instance Puppeteer existante');
+      return { browser: globalBrowser, page: globalPage };
+    } catch (error) {
+      debugLog('⚠️ Instance Puppeteer invalide, création d\'une nouvelle...');
+      globalBrowser = null;
+      globalPage = null;
+    }
+  }
+  
+  // Créer une nouvelle instance
+  debugLog('🚀 Création d\'une nouvelle instance Puppeteer...');
+  
+  globalBrowser = await puppeteer.launch({ 
+    headless: true,
+    args: [
+      '--no-sandbox', 
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage', // Performance
+      '--disable-accelerated-2d-canvas', // Performance
+      '--disable-gpu', // Performance
+      '--disable-background-timer-throttling', // Performance
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+      '--single-process' // Plus rapide mais plus de mémoire
+    ]
+  });
+  
+  globalPage = await globalBrowser.newPage();
+  
+  // Configuration de la page
+  await globalPage.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
+  
+  browserStartTime = now;
+  debugLog('✅ Nouvelle instance Puppeteer créée');
+  
+  return { browser: globalBrowser, page: globalPage };
+}
+
+// Fonction pour nettoyer l'instance en cas d'erreur
+async function cleanupBrowser() {
+  if (globalBrowser) {
+    try {
+      await globalBrowser.close();
+      debugLog('🧹 Instance Puppeteer fermée');
+    } catch (error) {
+      debugLog(`⚠️ Erreur fermeture navigateur: ${error.message}`);
+    }
+  }
+  globalBrowser = null;
+  globalPage = null;
+  browserStartTime = null;
+}
+
+// Nettoyage automatique toutes les 10 minutes
+setInterval(async () => {
+  if (browserStartTime && (Date.now() - browserStartTime > BROWSER_TIMEOUT)) {
+    debugLog('⏰ Nettoyage automatique de l\'instance Puppeteer');
+    await cleanupBrowser();
+  }
+}, 60 * 1000); // Vérifier toutes les minutes
+
 // Fonction pour écrire dans un fichier de debug
 function debugLog(message) {
   const timestamp = new Date().toISOString();
@@ -480,35 +614,25 @@ function formatRevenue(revenue) {
 async function scrapeArtistRevenue(artistUrl) {
   console.log(`🚀 Scraping artist: ${artistUrl}`);
   
+  // Vérifier le cache en premier
+  const cachedResult = getFromCache(artistUrl);
+  if (cachedResult) {
+    console.log('⚡ Résultat récupéré depuis le cache');
+    return cachedResult;
+  }
+  
   // IMPORTANT: Vider le cache pour forcer une nouvelle analyse
   cachedTop5Data = null;
   console.log('🗑️ Cache vidé - nouvelle analyse forcée');
   
-  const browser = await puppeteer.launch({ 
-    headless: true,
-    args: [
-      '--no-sandbox', 
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage', // Performance
-      '--disable-accelerated-2d-canvas', // Performance
-      '--disable-gpu', // Performance
-      '--disable-background-timer-throttling', // Performance
-      '--disable-backgrounding-occluded-windows',
-      '--disable-renderer-backgrounding',
-      '--single-process' // Plus rapide mais plus de mémoire
-    ]
-  });
-  
   try {
-    const page = await browser.newPage();
+    // Utiliser l'instance Puppeteer réutilisable
+    const { browser, page } = await getBrowserInstance();
     
     // Capturer les logs de la page pour débugger
     page.on('console', msg => {
       console.log('PAGE LOG:', msg.text());
     });
-    
-    // Simuler un vrai navigateur
-    await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     
     console.log('📍 Navigation vers la page artiste...');
     await page.goto(artistUrl, { waitUntil: 'networkidle2', timeout: 20000 });
@@ -563,13 +687,19 @@ async function scrapeArtistRevenue(artistUrl) {
     };
     
     console.log('✅ Scraping terminé avec succès !');
+    
+    // Sauvegarder en cache pour éviter de refaire le scraping
+    saveToCache(artistUrl, result);
+    
     return result;
     
   } catch (error) {
     console.error('❌ Erreur lors du scraping:', error);
+    
+    // En cas d'erreur, nettoyer l'instance pour éviter qu'elle soit corrompue
+    await cleanupBrowser();
+    
     throw error;
-  } finally {
-    await browser.close();
   }
 }
 
