@@ -39,38 +39,35 @@ function RevenueResults({ results, onReset }) {
 
   return (
     <div className="revenue-results">
+      <h1 style={{color: 'red', fontSize: '50px', textAlign: 'center'}}>YOUPI</h1>
       {/* En-tête avec artiste */}
       <div className="results-header">
-        <div className="artist-header">
-          {artistImage && (
-            <div className="artist-image" style={{
+        {artistImage && (
+          <div className="artist-image" style={{
+            width: '80px !important',
+            height: '80px !important',
+            overflow: 'hidden !important',
+            borderRadius: '50% !important',
+            border: '3px solid rgba(29, 185, 84, 0.3) !important',
+            display: 'block !important',
+            margin: '0 auto 20px auto !important'
+          }}>
+            <img src={artistImage} alt={artistName || 'Artiste'} style={{
               width: '80px !important',
               height: '80px !important',
-              minWidth: '80px !important',
-              maxWidth: '80px !important',
-              minHeight: '80px !important',
-              maxHeight: '80px !important',
-              overflow: 'hidden',
-              borderRadius: '50%',
-              flexShrink: 0,
-              display: 'flex !important',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              <img src={artistImage} alt={artistName || 'Artiste'} style={{
-                width: '80px !important',
-                height: '80px !important',
-                objectFit: 'cover',
-                borderRadius: '50%',
-                border: '3px solid rgba(29, 185, 84, 0.3)',
-                display: 'block !important'
-              }} />
-            </div>
-          )}
-          <div className="artist-details">
-            <h2>{artistName || 'Artiste analysé'}</h2>
-            <p>Analyse terminée en {duration}</p>
+              objectFit: 'cover !important',
+              borderRadius: '50% !important',
+              display: 'block !important'
+            }} />
           </div>
+        )}
+        <div className="artist-details" style={{
+          textAlign: 'center !important',
+          background: 'lime !important',
+          padding: '10px !important'
+        }}>
+          <h2>🔥 {artistName || 'Artiste analysé'} 🔥</h2>
+          <p>Analyse terminée en {duration}</p>
         </div>
       </div>
 
