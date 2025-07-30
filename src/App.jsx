@@ -146,12 +146,6 @@ function App() {
             <div className="loading-spinner">⏳</div>
             <h2>Analyse en cours...</h2>
             <p className="progress-message">{progressMessage}</p>
-            <div className="loading-steps">
-              <div className="loading-step">🔍 Accès à la page artiste</div>
-              <div className="loading-step">👥 Récupération des auditeurs mensuels</div>
-              <div className="loading-step">🎵 Analyse du top 5 des titres</div>
-              <div className="loading-step">💰 Calcul des revenus estimés</div>
-            </div>
             <p className="loading-note">
               Cette opération prend maintenant ~4-6 secondes (optimisé!)
             </p>

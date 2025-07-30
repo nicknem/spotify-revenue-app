@@ -31,6 +31,59 @@ setInterval(() => {
 }, 5 * 60 * 1000); // Toutes les 5 minutes
 
 /**
+ * Filtre les artistes pour ne garder que ceux qui semblent français
+ * @param {Array} artists - Liste d'artistes à filtrer
+ * @returns {Array} Artistes filtrés
+ */
+function filterFrenchArtists(artists) {
+  // Genres typiquement français
+  const frenchGenres = [
+    'chanson française', 'chanson francaise', 'french pop', 'rap français', 'rap francais',
+    'variété française', 'variete francaise', 'french rock', 'french indie', 'nouvelle chanson française',
+    'electro français', 'electro francais', 'french electronic', 'french house', 'french hip hop',
+    'yé-yé', 'ye-ye', 'varieté', 'variete', 'zouk', 'kompa', 'raï', 'rai'
+  ];
+  
+  // Artistes français populaires connus (liste curatée)
+  const knownFrenchArtists = [
+    'stromae', 'angèle', 'angele', 'aya nakamura', 'jul', 'sch', 'pnl', 'ninho',
+    'dadju', 'maître gims', 'maitre gims', 'bigflo oli', 'bigflo & oli', 'soprano',
+    'nekfeu', 'orelsan', 'damso', 'lomepal', 'gradur', 'booba', 'kaaris',
+    'christophe maé', 'christophe mae', 'patrick bruel', 'calogero', 'zazie',
+    'mylène farmer', 'mylene farmer', 'céline dion', 'celine dion', 'indila',
+    'louane', 'vianney', 'kendji girac', 'slimane', 'amir', 'claudio capéo',
+    'claudio capeo', 'thomas dutronc', 'clara luciani', 'pomme', 'suzane',
+    'lous and the yakuza', 'grand corps malade', 'mcfly carlito', 'mcfly & carlito'
+  ];
+  
+  return artists.filter(artist => {
+    // Vérifier par nom d'artiste (liste curatée)
+    const artistNameLower = artist.name.toLowerCase();
+    if (knownFrenchArtists.some(french => artistNameLower.includes(french) || french.includes(artistNameLower))) {
+      return true;
+    }
+    
+    // Vérifier par genres
+    if (artist.genres && artist.genres.length > 0) {
+      const artistGenres = artist.genres.map(g => g.toLowerCase());
+      if (artistGenres.some(genre => 
+        frenchGenres.some(frenchGenre => genre.includes(frenchGenre) || frenchGenre.includes(genre))
+      )) {
+        return true;
+      }
+    }
+    
+    // Si l'artiste a une très haute popularité en France mais faible globalement,
+    // c'est probablement un artiste français/francophone
+    if (artist.popularity > 60 && artist.followers < 1000000) {
+      return true;
+    }
+    
+    return false;
+  });
+}
+
+/**
  * Obtenir un token d'accès via Client Credentials Flow
  * Ce flow est parfait pour nos besoins (recherche publique, pas d'accès utilisateur)
  */
@@ -61,18 +114,20 @@ async function getAccessToken() {
  * Rechercher des artistes par nom
  * @param {string} query - Nom de l'artiste à rechercher
  * @param {number} limit - Nombre de résultats (défaut: 10)
+ * @param {string} locale - Locale utilisateur (ex: 'fr', 'en')
+ * @param {boolean} localizedOnly - Si true, filtre pour artistes locaux
  * @returns {Array} Liste d'artistes avec leurs informations
  */
-async function searchArtists(query, limit = 10) {
-  // Normaliser la requête pour le cache
-  const cacheKey = `${query.toLowerCase().trim()}_${limit}`;
+async function searchArtists(query, limit = 10, locale = 'fr', localizedOnly = false) {
+  // Normaliser la requête pour le cache (inclure locale et filtrage)
+  const cacheKey = `${query.toLowerCase().trim()}_${limit}_${locale}_${localizedOnly}`;
   
   // Vérifier le cache en premier (réponse instantanée)
   const cached = autocompleteCache.get(cacheKey);
   if (cached) {
     const now = Date.now();
     if (now - cached.timestamp < AUTOCOMPLETE_CACHE_TTL) {
-      console.log(`⚡ Autocomplete cache hit pour "${query}"`);
+      console.log(`⚡ Autocomplete cache hit pour "${query}" (${locale})`);
       return cached.data;
     } else {
       autocompleteCache.delete(cacheKey);
@@ -82,14 +137,17 @@ async function searchArtists(query, limit = 10) {
   await getAccessToken();
   
   try {
-    console.log(`🔍 Recherche Spotify (nouvelle): "${query}"`);
+    console.log(`🔍 Recherche Spotify (nouvelle): "${query}" (locale: ${locale}, localized: ${localizedOnly})`);
+    
+    // Définir le marché selon la locale
+    const market = locale === 'fr' ? 'FR' : locale === 'es' ? 'ES' : locale === 'de' ? 'DE' : 'US';
     
     const results = await spotifyApi.searchArtists(query, { 
-      limit: Math.min(limit, 10), // Limiter à 10 pour l'autocomplete (plus rapide)
-      market: 'FR' // Marché français pour la pertinence
+      limit: Math.min(limit, localizedOnly ? 15 : 10), // Plus de résultats si filtrage pour compenser
+      market: market
     });
     
-    const artists = results.body.artists.items.map(artist => ({
+    let artists = results.body.artists.items.map(artist => ({
       id: artist.id,
       name: artist.name,
       url: artist.external_urls.spotify,
@@ -98,6 +156,12 @@ async function searchArtists(query, limit = 10) {
       popularity: artist.popularity,
       genres: artist.genres
     }));
+
+    // Appliquer le filtrage par locale si demandé
+    if (localizedOnly && locale === 'fr') {
+      artists = filterFrenchArtists(artists);
+      artists = artists.slice(0, limit); // Réduire au nombre demandé après filtrage
+    }
     
     // Sauvegarder en cache pour les prochaines requêtes identiques
     autocompleteCache.set(cacheKey, {

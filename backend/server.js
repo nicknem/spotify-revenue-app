@@ -117,7 +117,7 @@ app.post('/api/artist-revenue', async (req, res) => {
 // Route pour rechercher des artistes via l'API Spotify
 app.get('/api/search-artist', async (req, res) => {
   try {
-    const { q, limit } = req.query;
+    const { q, limit, locale, localizedOnly } = req.query;
     
     if (!q) {
       return res.status(400).json({ 
@@ -125,11 +125,18 @@ app.get('/api/search-artist', async (req, res) => {
       });
     }
     
-    const artists = await searchArtists(q, parseInt(limit) || 10);
+    const artists = await searchArtists(
+      q, 
+      parseInt(limit) || 10,
+      locale || 'fr',
+      localizedOnly === 'true'
+    );
     
     res.json({
       success: true,
       query: q,
+      locale: locale || 'fr',
+      localizedOnly: localizedOnly === 'true',
       artists: artists
     });
     

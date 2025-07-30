@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { searchArtist, getTrendingArtists } from '../services/api';
+import { searchArtist, getTrendingArtists, getUserLocale } from '../services/api';
 
 function ArtistAutocomplete({ onSelectArtist, loading }) {
   const [query, setQuery] = useState('');
@@ -9,9 +9,21 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [userLocale, setUserLocale] = useState('fr');
+  const [frenchOnly, setFrenchOnly] = useState(false);
   
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
+
+  // Détecter la localisation de l'utilisateur au montage
+  useEffect(() => {
+    const locale = getUserLocale();
+    setUserLocale(locale);
+    // Activer automatiquement le filtrage français si l'utilisateur est en France
+    if (locale === 'fr') {
+      setFrenchOnly(true);
+    }
+  }, []);
 
   // Charger les artistes tendance seulement quand l'input est vide (lazy loading)
   useEffect(() => {
@@ -40,7 +52,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
 
       setIsSearching(true);
       try {
-        const artists = await searchArtist(query, 4); // Moins de résultats = plus rapide
+        const artists = await searchArtist(query, 4, frenchOnly); // Appliquer le filtrage français
         setSuggestions(artists);
         setError('');
       } catch (error) {
@@ -53,7 +65,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
     }, 200); // Debounce de 200ms pour autocomplete rapide
 
     return () => clearTimeout(searchTimeout);
-  }, [query]);
+  }, [query, frenchOnly]);
 
   const handleInputChange = (e) => {
     setQuery(e.target.value);
@@ -156,6 +168,36 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
   return (
     <div className="search-section flex flex-col items-center justify-center">
       <form onSubmit={handleSubmit} className="search-form">
+        {/* Toggle pour filtrage français (seulement si l'utilisateur est français) */}
+        {userLocale === 'fr' && (
+          <div className="french-filter-toggle" style={{
+            marginBottom: 'var(--spacing-md)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--spacing-sm)',
+            fontSize: 'var(--font-size-sm)',
+            color: 'var(--spotify-light-gray)'
+          }}>
+            <label style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--spacing-xs)',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="checkbox"
+                checked={frenchOnly}
+                onChange={(e) => setFrenchOnly(e.target.checked)}
+                style={{
+                  accentColor: 'var(--spotify-green)',
+                  transform: 'scale(1.1)'
+                }}
+              />
+              🇫🇷 Artistes français uniquement
+            </label>
+          </div>
+        )}
+        
         <div className="search-input-group">
           <div className="search-input-container">
             <input

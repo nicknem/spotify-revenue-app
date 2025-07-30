@@ -92,16 +92,30 @@ export async function analyzeArtistRevenue(artistUrl) {
 }
 
 /**
+ * Détecte la localisation de l'utilisateur
+ * @returns {string} Code locale (ex: 'fr', 'en', 'es')
+ */
+export function getUserLocale() {
+  // Détecter via navigator.language (ex: 'fr-FR' -> 'fr')
+  const language = navigator.language || navigator.userLanguage || 'en';
+  return language.split('-')[0].toLowerCase();
+}
+
+/**
  * Rechercher des artistes par nom via l'API Spotify
  * 
  * @param {string} query - Nom de l'artiste à rechercher
  * @param {number} limit - Nombre de résultats (défaut: 10)
+ * @param {boolean} localizedOnly - Si true, filtre pour artistes locaux
  * @returns {Promise<Array>} - Liste d'artistes avec photos et infos
  */
-export async function searchArtist(query, limit = 10) {
-  console.log(`🔍 Recherche d'artiste: ${query}`);
+export async function searchArtist(query, limit = 10, localizedOnly = false) {
+  console.log(`🔍 Recherche d'artiste: ${query} (localized: ${localizedOnly})`);
   
-  const response = await apiRequest(`${API_BASE_URL}/api/search-artist?q=${encodeURIComponent(query)}&limit=${limit}`);
+  const locale = getUserLocale();
+  const url = `${API_BASE_URL}/api/search-artist?q=${encodeURIComponent(query)}&limit=${limit}&locale=${locale}&localizedOnly=${localizedOnly}`;
+  
+  const response = await apiRequest(url);
   return response.artists || [];
 }
 
