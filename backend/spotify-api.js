@@ -9,6 +9,27 @@ const spotifyApi = new SpotifyWebApi({
 // Token d'authentification (Client Credentials flow)
 let tokenExpirationTime = 0;
 
+// Cache ultra-rapide pour l'autocomplete (2 minutes seulement)
+const autocompleteCache = new Map();
+const AUTOCOMPLETE_CACHE_TTL = 2 * 60 * 1000; // 2 minutes
+
+// Nettoyage automatique du cache autocomplete toutes les 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  let cleaned = 0;
+  
+  for (const [key, cached] of autocompleteCache.entries()) {
+    if (now - cached.timestamp >= AUTOCOMPLETE_CACHE_TTL) {
+      autocompleteCache.delete(key);
+      cleaned++;
+    }
+  }
+  
+  if (cleaned > 0) {
+    console.log(`🧹 Cache autocomplete nettoyé: ${cleaned} entrées supprimées`);
+  }
+}, 5 * 60 * 1000); // Toutes les 5 minutes
+
 /**
  * Obtenir un token d'accès via Client Credentials Flow
  * Ce flow est parfait pour nos besoins (recherche publique, pas d'accès utilisateur)
@@ -43,13 +64,28 @@ async function getAccessToken() {
  * @returns {Array} Liste d'artistes avec leurs informations
  */
 async function searchArtists(query, limit = 10) {
+  // Normaliser la requête pour le cache
+  const cacheKey = `${query.toLowerCase().trim()}_${limit}`;
+  
+  // Vérifier le cache en premier (réponse instantanée)
+  const cached = autocompleteCache.get(cacheKey);
+  if (cached) {
+    const now = Date.now();
+    if (now - cached.timestamp < AUTOCOMPLETE_CACHE_TTL) {
+      console.log(`⚡ Autocomplete cache hit pour "${query}"`);
+      return cached.data;
+    } else {
+      autocompleteCache.delete(cacheKey);
+    }
+  }
+  
   await getAccessToken();
   
   try {
-    console.log(`🔍 Recherche Spotify: "${query}"`);
+    console.log(`🔍 Recherche Spotify (nouvelle): "${query}"`);
     
     const results = await spotifyApi.searchArtists(query, { 
-      limit: Math.min(limit, 50), // Limite API Spotify: 50
+      limit: Math.min(limit, 10), // Limiter à 10 pour l'autocomplete (plus rapide)
       market: 'FR' // Marché français pour la pertinence
     });
     
@@ -63,7 +99,13 @@ async function searchArtists(query, limit = 10) {
       genres: artist.genres
     }));
     
-    console.log(`✅ ${artists.length} artistes trouvés pour "${query}"`);
+    // Sauvegarder en cache pour les prochaines requêtes identiques
+    autocompleteCache.set(cacheKey, {
+      data: artists,
+      timestamp: Date.now()
+    });
+    
+    console.log(`✅ ${artists.length} artistes trouvés et cachés pour "${query}"`);
     return artists;
     
   } catch (error) {

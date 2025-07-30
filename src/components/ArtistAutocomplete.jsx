@@ -40,7 +40,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
 
       setIsSearching(true);
       try {
-        const artists = await searchArtist(query, 6);
+        const artists = await searchArtist(query, 4); // Moins de résultats = plus rapide
         setSuggestions(artists);
         setError('');
       } catch (error) {
@@ -50,7 +50,7 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
       } finally {
         setIsSearching(false);
       }
-    }, 500); // Debounce de 500ms pour réduire les appels API
+    }, 200); // Debounce de 200ms pour autocomplete rapide
 
     return () => clearTimeout(searchTimeout);
   }, [query]);
