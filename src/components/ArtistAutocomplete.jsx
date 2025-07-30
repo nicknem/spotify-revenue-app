@@ -122,77 +122,23 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
   const renderArtistItem = (artist, index, isSelected) => (
     <div
       key={artist.id}
-      className="artist-suggestion"
+      className={`artist-suggestion ${isSelected ? 'selected' : ''}`}
       onClick={() => handleArtistSelect(artist)}
-      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(29, 185, 84, 0.1)'}
-      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-      style={{
-        display: 'flex', 
-        flexDirection: 'row',
-        alignItems: 'center', 
-        justifyContent: 'center',
-        padding: '10px 16px',
-        width: '100%',
-        boxSizing: 'border-box',
-        cursor: 'pointer',
-        transition: 'background 0.2s ease',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        background: isSelected ? 'rgba(29, 185, 84, 0.1)' : 'transparent'
-      }}
     >
-      <div className="artist-content" style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        maxWidth: '400px',
-        width: '100%',
-        gap: '12px'
-      }}>
-        <div className="artist-avatar-box" style={{
-          width: '56px', 
-          height: '56px', 
-          flexShrink: 0
-        }}>
+      <div className="artist-suggestion-content">
+        <div className="avatar avatar-md">
           {artist.image ? (
-            <img src={artist.image} alt={artist.name} style={{
-              width: '56px', 
-              height: '56px', 
-              borderRadius: '50%', 
-              objectFit: 'cover',
-              display: 'block',
-              border: '2px solid rgba(255, 255, 255, 0.1)'
-            }} />
+            <img src={artist.image} alt={artist.name} />
           ) : (
-            <div className="avatar-placeholder" style={{
-              width: '56px', 
-              height: '56px', 
-              borderRadius: '50%', 
+            <div className="flex items-center justify-center w-full h-full" style={{
               background: 'rgba(255, 255, 255, 0.1)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              fontSize: '20px',
-              border: '2px solid rgba(255, 255, 255, 0.1)'
+              fontSize: '20px'
             }}>🎵</div>
           )}
         </div>
-        <div className="artist-info-box" style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center'
-        }}>
-          <div style={{
-            margin: 0, 
-            fontSize: '15px',
-            fontWeight: '600',
-            color: '#ffffff'
-          }}>{artist.name}</div>
-          <div style={{
-            margin: 0,
-            fontSize: '13px',
-            color: '#b3b3b3'
-          }}>
+        <div className="artist-info">
+          <div className="artist-name">{artist.name}</div>
+          <div className="artist-details-text">
             {artist.followers?.toLocaleString()} auditeurs
             {artist.genres?.length > 0 && ` • ${artist.genres[0]}`}
           </div>
@@ -202,13 +148,10 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
   );
 
   return (
-    <div className="artist-autocomplete">
-      <form onSubmit={handleSubmit} className="input-form">
-        <div className="input-group" style={{maxWidth: '600px', margin: '0 auto'}}>
-          <div className="input-container" style={{
-            position: 'relative',
-            flex: 1
-          }}>
+    <div className="search-section flex flex-col items-center justify-center">
+      <form onSubmit={handleSubmit} className="search-form">
+        <div className="search-input-group">
+          <div className="search-input-container">
             <input
               ref={inputRef}
               type="text"
@@ -218,31 +161,20 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
               onBlur={handleInputBlur}
               onKeyDown={handleKeyDown}
               placeholder="Nom d'artiste ou URL Spotify..."
-              className="url-input"
+              className="search-input input"
               disabled={loading}
             />
             
             {showSuggestions && (query.length >= 2 || trendingArtists.length > 0) && (
-              <div className="autocomplete-dropdown" ref={suggestionsRef} style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                marginTop: '8px',
-                background: 'rgba(30, 30, 30, 0.98)',
-                borderRadius: '12px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                maxHeight: '320px',
-                overflowY: 'auto',
-                zIndex: 1000,
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)'
-              }}>
+              <div className="autocomplete-dropdown dropdown" ref={suggestionsRef}>
                 
                 {/* Résultats de recherche */}
                 {query.length >= 2 && (
                   <div className="suggestions-section">
                     {isSearching && (
-                      <div className="autocomplete-loading">Recherche...</div>
+                      <div className="p-md text-center">
+                        <span className="text-spotify-light-gray">Recherche...</span>
+                      </div>
                     )}
                     
                     {!isSearching && suggestions.length > 0 && (
@@ -255,7 +187,11 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
                     )}
                     
                     {!isSearching && query.length >= 2 && suggestions.length === 0 && (
-                      <div className="no-results">Aucun artiste trouvé</div>
+                      <div className="p-md text-center">
+                        <span className="text-spotify-light-gray" style={{fontStyle: 'italic'}}>
+                          Aucun artiste trouvé
+                        </span>
+                      </div>
                     )}
                   </div>
                 )}
@@ -279,14 +215,24 @@ function ArtistAutocomplete({ onSelectArtist, loading }) {
           
           <button 
             type="submit" 
-            className="analyze-button"
+            className="btn btn-primary btn-md"
             disabled={loading || !query.trim()}
           >
             {loading ? 'Analyse en cours...' : 'Analyser'}
           </button>
         </div>
         
-        {error && <div className="error-message">{error}</div>}
+        {error && (
+          <div className="error-message mt-md p-md text-center" style={{
+            color: 'var(--spotify-red)',
+            fontSize: 'var(--font-size-sm)',
+            border: '1px solid rgba(255, 107, 107, 0.3)',
+            background: 'rgba(255, 107, 107, 0.1)',
+            borderRadius: 'var(--radius-md)'
+          }}>
+            {error}
+          </div>
+        )}
       </form>
     </div>
   );

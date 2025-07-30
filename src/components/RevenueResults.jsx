@@ -38,36 +38,21 @@ function RevenueResults({ results, onReset }) {
   } = data;
 
   return (
-    <div className="revenue-results">
-      <h1 style={{color: 'red', fontSize: '50px', textAlign: 'center'}}>YOUPI</h1>
+    <div className="results-container">
       {/* En-tête avec artiste */}
       <div className="results-header">
-        {artistImage && (
-          <div className="artist-image" style={{
-            width: '80px !important',
-            height: '80px !important',
-            overflow: 'hidden !important',
-            borderRadius: '50% !important',
-            border: '3px solid rgba(29, 185, 84, 0.3) !important',
-            display: 'block !important',
-            margin: '0 auto 20px auto !important'
-          }}>
-            <img src={artistImage} alt={artistName || 'Artiste'} style={{
-              width: '80px !important',
-              height: '80px !important',
-              objectFit: 'cover !important',
-              borderRadius: '50% !important',
-              display: 'block !important'
-            }} />
+        <div className="artist-header">
+          {artistImage && (
+            <div className="avatar avatar-lg mb-md" style={{
+              border: '3px solid rgba(29, 185, 84, 0.3)'
+            }}>
+              <img src={artistImage} alt={artistName || 'Artiste'} />
+            </div>
+          )}
+          <div className="artist-details">
+            <h2>{artistName || 'Artiste analysé'}</h2>
+            <p>Analyse terminée en {duration}</p>
           </div>
-        )}
-        <div className="artist-details" style={{
-          textAlign: 'center !important',
-          background: 'lime !important',
-          padding: '10px !important'
-        }}>
-          <h2>🔥 {artistName || 'Artiste analysé'} 🔥</h2>
-          <p>Analyse terminée en {duration}</p>
         </div>
       </div>
 
@@ -99,9 +84,11 @@ function RevenueResults({ results, onReset }) {
       </div>
 
       {/* Bouton reset */}
-      <button onClick={onReset} className="reset-button">
-        Analyser un autre artiste
-      </button>
+      <div className="text-center mt-xl">
+        <button onClick={onReset} className="btn btn-primary btn-lg">
+          Analyser un autre artiste
+        </button>
+      </div>
     </div>
   );
 }
